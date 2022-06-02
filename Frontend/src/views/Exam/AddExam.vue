@@ -23,7 +23,7 @@
                 <span style="font-size: 14px">开始时间</span>
               </template>
               <el-date-picker size="large" v-model="EXAM.beginTime" type="datetime" placeholder="请选择时间"
-                               @change="setSession"/>
+                              @change="setSession"/>
             </el-descriptions-item>
             <el-descriptions-item label-align="right" align="center">
               <template #label>
@@ -31,7 +31,7 @@
                 <span style="font-size: 14px">结束时间</span>
               </template>
               <el-date-picker size="large" v-model="EXAM.endTime" type="datetime" placeholder="请选择时间"
-                               @change="setSession"/>
+                              @change="setSession"/>
             </el-descriptions-item>
             <el-descriptions-item label-align="center" align="center">
               <template #label>
@@ -39,7 +39,7 @@
                 <span style="font-size: 14px">班级</span>
               </template>
               <el-select v-model="EXAM.className" placeholder="请选择班级" class="handle-select mr10" size="large"
-                          @change="setSession">
+                         @change="setSession">
                 <el-option v-for="classes in Classes" :label="classes.className" :value="classes.className"/>
               </el-select>
             </el-descriptions-item>
@@ -49,7 +49,7 @@
                 <span style="font-size: 14px">科目</span>
               </template>
               <el-select v-model="EXAM.subjectName" placeholder="请选择科目" class="handle-select mr10" size="large"
-                          @change="setSession">
+                         @change="setSession">
                 <el-option v-for="subject in Subjects" :label="subject.subjectName" :value="subject.subjectName"/>
               </el-select>
             </el-descriptions-item>
@@ -58,7 +58,7 @@
                 <span style="font-size: 14px">考试描述</span>
               </template>
               <el-input placeholder="请输入考试描述" v-model="EXAM.description" type="textarea"
-                        />
+              />
             </el-descriptions-item>
           </el-descriptions>
           <el-switch
@@ -77,17 +77,21 @@
           <p style="font-size: 20px"><i class="el-icon-lx-tag"></i> 设计试卷</p>
         </template>
         <el-row>
+          <!--            组卷    -->
           <el-col :span="11" :offset="1">
-            <el-card style="height: 85vh">
+            <el-card style="min-height: 85vh" shadow="hover">
               <template #header>
-                <center><h2>手动组卷</h2></center>
+                <center><h2>组卷</h2></center>
               </template>
-              <el-divider><el-tag size="large"><h3>{{ EXAM.subjectName }} : 选择题</h3></el-tag></el-divider>
+              <!--              选择题 -->
+              <el-divider>
+                <el-tag size="large"><h3>{{ EXAM.subjectName }} : 选择题</h3></el-tag>
+              </el-divider>
               <el-collapse>
-                <el-collapse-item v-if="VisChoice[index] != -1" v-for="(data, index) in ProblemChoice" :key="data"
+                <el-collapse-item v-for="(data, index) in ProblemChoice" :key="data"
                                   :name="String(index+1)">
                   <template #title>
-                    <span style="font-size: 16px;display: block">{{ index + 1 }}. {{ data.title }}</span>
+                    <span style="font-size: 16px;display: block">#{{ index + 1 }}.  {{ data.title }}</span>
                   </template>
 
                   <div style="font-size: 14px"><p style="font-size: 14px">{{ data.description }}</p>
@@ -102,64 +106,83 @@
               </el-collapse>
               <br/>
               <br/>
-              <el-divider><el-tag size="large"><h3>{{ EXAM.subjectName }} : 主观题</h3></el-tag></el-divider>
+              <!--              主观题 -->
+              <el-divider>
+                <el-tag size="large"><h3>{{ EXAM.subjectName }} : 主观题</h3></el-tag>
+              </el-divider>
               <el-collapse>
                 <el-collapse-item v-for="(data, index) in ProblemSubject" :key="data" :name="String(index+1)">
                   <template #title>
-                    <span style="font-size: 16px;display: block">{{ index + 1 }}. {{ data.title }}</span>
+                    <span style="font-size: 16px;display: block">#{{ index + 1 }}.  {{ data.title }}</span>
                   </template>
                   <div style="font-size: 14px">
                     <p>{{ data.description }}</p>
                     选择分值 :
-                    <el-input-number size="small" v-model.number="data.score" :min="1" :max="10"/>
+                    <el-input-number size="small" v-model.number="data.score" :min="1" :max="20"/>
                     <el-button style="float: right;" type="text" color="#DC3545" @click="addSubject(data, index)">
                       <i class="el-icon-lx-add"/>添加
                     </el-button>
                   </div>
                 </el-collapse-item>
               </el-collapse>
-              <el-divider style="margin-top: 20vh;"><el-button circle size="large" @click="" type="warning" round plain> 随机组卷 </el-button></el-divider>
+              <!--              随机组卷按钮 -->
+              <el-divider style="margin-top: 10vh;">
+                <el-button circle size="large" @click="AutoConfirm" type="warning" round style="font-weight: bolder">随机组卷</el-button>
+              </el-divider>
             </el-card>
           </el-col>
+          <!--            预览    -->
           <el-col :span="11" :offset="1">
-            <!--            预览    -->
-            <el-card style="height: 85vh;">
+            <el-card style="min-height: 85vh;" shadow="hover">
               <template #header>
                 <center><h2>预览</h2></center>
               </template>
-
-              <el-divider><el-tag><h3>{{ EXAM.subjectName }} : 选择题</h3></el-tag></el-divider>
+<!--              选择题-->
+              <el-divider>
+                <el-tag><h3>{{ EXAM.subjectName }} : 选择题</h3></el-tag>
+              </el-divider>
               <el-collapse>
                 <el-collapse-item v-for="(data, index) in Choice" :key="data" :name="String(index+1)">
                   <template #title>
-                    <span style="font-size: 16px;display: block">{{ index + 1 }}. {{ data.title }}</span>
+                    <span style="font-size: 16px;display: block">#{{ index + 1 }}.  {{ data.title }}</span>
+                    <el-tag type="success" effect="dark" size="small" style="margin-left: 10px; margin-top: -2px">
+                      {{ data.score }} 分
+                    </el-tag>
                   </template>
-
                   <div style="font-size: 14px">
                     <p>{{ data.description }}</p>
-                    <el-tag type="success">{{data.score}} 分</el-tag>
-                    <el-button style="float: right;"  type="text" color="#DC3545" @click="deleteChoice(data, index)"><i
+                    <el-button style="float: right;" type="text" color="#DC3545" @click="deleteChoice(data, index)"><i
                         class="el-icon-lx-delete"/>删除
                     </el-button>
                   </div>
                 </el-collapse-item>
               </el-collapse>
-              <el-divider><el-tag><h3>{{ EXAM.subjectName }} : 主观题</h3></el-tag></el-divider>
+              <br/>
+              <br/>
+<!--              主观题-->
+              <el-divider>
+                <el-tag><h3>{{ EXAM.subjectName }} : 主观题</h3></el-tag>
+              </el-divider>
               <el-collapse>
                 <el-collapse-item v-for="(data, index) in Subject" :key="data" :name="String(index+1)">
                   <template #title>
-                    <span style="font-size: 16px;display: block">{{ index + 1 }}. {{ data.title }}</span>
+                    <span style="font-size: 16px;display: block">#{{ index + 1 }}.  {{ data.title }}</span>
+                    <el-tag type="success" effect="dark" size="small" style="margin-left: 10px; margin-top: -2px">
+                      {{ data.score }} 分
+                    </el-tag>
                   </template>
-
                   <div style="font-size: 14px">
                     <p>{{ data.description }}</p>
-                    <el-tag type="success">{{data.score}} 分</el-tag>
                     <el-button style="float: right;" type="text" color="#DC3545" @click="deleteSubject(data, index)"><i
                         class="el-icon-lx-delete"/>删除
                     </el-button>
                   </div>
                 </el-collapse-item>
               </el-collapse>
+<!--              清空试题 -->
+              <el-divider style="margin-top: 10vh;">
+                <el-button circle size="large" @click="ClearAll" type="danger" round style="font-weight: bolder">清空试题</el-button>
+              </el-divider>
             </el-card>
           </el-col>
         </el-row>
@@ -171,6 +194,18 @@
         <div class="container">
         </div>
       </el-tab-pane>
+        <!--     随机组卷 内层-->
+        <el-dialog width="30%" title="设置要添加的题目数量" v-model="dialogVisible">
+          <el-card>
+            <div>选择题数量 <el-input-number size="small" v-model="ChoiceNum" :min="0" :max="ProblemChoice.length" controls-position="right"/></div>
+            <br/>
+            <div>主观题数量 <el-input-number size="small" v-model="SubjectNum" :min="0" :max="ProblemSubject.length" controls-position="right"/></div>
+          </el-card>
+          <template #footer>
+            <el-button @click="dialogVisible = false" size="small">取 消</el-button>
+            <el-button type="primary" @click="AutoCombination" size="small">确定</el-button>
+          </template>
+        </el-dialog>
     </el-tabs>
   </div>
 
@@ -178,21 +213,24 @@
 
 <script>
 import request from "../../utils/request";
-import {ElMessage, ElMessageBox} from "element-plus";
+import {ElMessage, ElMessageBox, ElNotification} from "element-plus";
 
 export default {
   data() {
     return {
+      dialogVisible: false,
       EXAM: {},
-      Classes: [],
-      Subjects: [],
+      Classes: [],   // 班级
+      Subjects: [],  // 科目
       activeName: "first",
       ProblemChoice: [],
       ProblemSubject: [],
-      Choice: [],
+      Choice: [], // 要添加的选择题
       VisChoice: [],
-      Subject: [],
+      Subject: [],  // 要添加的主观题
       VisSubject: [],
+      ChoiceNum: 3, // 要随机生成的选择题数量
+      SubjectNum: 3, // 要随机生成的主观题数量
       score: "",
     }
   },
@@ -215,42 +253,77 @@ export default {
         for (let i = 0; i < this.ProblemChoice.length; i++) this.ProblemChoice.score = 0
       })
     },
+    // 添加、删除 选择题、主观题
     addSubject(data, index) {
-      if (this.VisSubject[index] == -1) {
+      if (this.VisSubject[data.pid] == 1) {
         ElMessage({
           type: "warning",
           message: "已添加，请勿重复操作"
         })
         return;
       }
-      this.VisSubject[index] = -1
-      this.Subject[index] = data
-      console.log(this.Subject)
+      ElMessage({
+        type: "success",
+        message: "添加成功"
+      })
+      this.VisSubject[data.pid] = 1
+      if(data.score == null) data.score = 1
+      this.Subject.push(data)
     },
     addChoice(data, index) {
-      console.log(this.VisChoice)
-      if (this.VisChoice[index] == -1) {
+      if (this.VisChoice[data.pid] == 1) {
         ElMessage({
           type: "warning",
           message: "已添加，请勿重复操作"
         })
         return;
       }
-      this.VisChoice[index] = -1
-      this.Choice[index] = data
-      console.log(this.Choice)
+      ElMessage({
+        type: "success",
+        message: "添加成功"
+      })
+      this.VisChoice[data.pid] = 1
+      if(data.score == null) data.score = 1
+      this.Choice.push(data)
     },
     deleteSubject(data, index) {
-      this.VisSubject[index] = 0;
-      this.Subject.shift(index)
+      this.VisSubject[data.pid] = 0;
+      this.Subject.splice(index, 1)
+      ElMessage({
+        type: "success",
+        message: "删除成功"
+      })
     },
     deleteChoice(data, index) {
-      this.VisChoice[index] = 0;
-      this.Choice.shift(index)
+      this.VisChoice[data.pid] = 0;
+      this.Choice.splice(index, 1)
+      ElMessage({
+        type: "success",
+        message: "删除成功"
+      })
+      console.log(this.Choice)
     },
+    // 清空所有试题
+    ClearAll(){
+      ElMessageBox.confirm('你确定要将已添加的所有试题清空吗？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }).then(() => {
+            ElMessage({
+              type: 'success',
+              message: '清空成功',})
+              this.VisSubject = []
+              this.VisChoice = []
+              this.Subject = []
+              this.Choice = []
+          }).catch(() => {})
+    },
+    // 存储考试信息
     setSession() {
       sessionStorage.setItem("EXAM", JSON.stringify(this.EXAM));
     },
+    // 检查考试信息是否填写完善
     checkFirst() {
       if (this.EXAM.title == null || this.EXAM.title.length == 0 || this.EXAM.beginTime == null ||
           this.EXAM.endTime == null || this.EXAM.className == null || this.EXAM.subjectName == null) {
@@ -270,6 +343,47 @@ export default {
     },
     test() {
       console.log(this.activeName)
+    },
+    AutoConfirm() {
+      ElMessageBox.confirm('随机组卷将清空已添加好的试题，是否继续?', '提示', {
+        confirmButtonText: '继续',
+        cancelButtonText: '放弃'
+      }).then(() => {
+        this.dialogVisible = true
+      }).catch(() => {
+
+      })
+    },
+    AutoCombination(){
+      this.VisSubject = []
+      this.Subject = []
+      request.get("/problemchoice/random", {
+        params:{subjectName: this.EXAM.subjectName, number: this.ChoiceNum}
+      }).then(res => {
+        this.Choice = []
+        this.VisChoice = []
+        this.Choice = res.data
+        for(let i = 0 ; i < this.Choice.length ; i ++){
+          this.VisChoice[this.Choice[i].pid] = 1
+        }
+      })
+      request.get("/problemsubject/random", {
+        params:{subjectName: this.EXAM.subjectName, number: this.SubjectNum}
+      }).then(res => {
+        this.Subject = []
+        this.VisSubject = []
+        this.Subject = res.data
+        for(let i = 0 ; i < this.Subject.length ; i ++){
+          this.VisSubject[this.Subject[i].pid] = 1
+        }
+      })
+      ElNotification({
+        title: '提示',
+        type: "success",
+        message: '组卷成功',
+        duration: 2500,
+      })
+      this.dialogVisible = false
     }
   },
   created() {
@@ -281,7 +395,16 @@ export default {
     })
     let EXAM = sessionStorage.getItem("EXAM")
     if (EXAM != null) this.EXAM = JSON.parse(EXAM)
-
+    // let Choice_and_Vis = sessionStorage.getItem("Choice_and_Vis")
+    // let Subject_and_Vis = sessionStorage.getItem("Subject_and_Vis")
+    // if(Choice_and_Vis != null) {
+    //   this.Choice = JSON.parse(Choice_and_Vis).Choice
+    //   this.VisChoice = JSON.parse(Choice_and_Vis).VisChoice
+    // }
+    // if(Subject_and_Vis != null) {
+    //   this.Subjects = JSON.parse(Subject_and_Vis).Subject
+    //   this.VisSubject = JSON.parse(Subject_and_Vis).VisSubject
+    // }
   }
 };
 </script>
@@ -323,6 +446,10 @@ export default {
 /deep/ .el-card__header {
   background-color: aliceblue;
   padding: 10px
+}
+
+/deep/ .el-card {
+  border: 1px solid #97a8be;
 }
 
 .my-label {

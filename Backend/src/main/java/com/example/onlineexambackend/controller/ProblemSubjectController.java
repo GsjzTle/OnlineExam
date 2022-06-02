@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/problemsubject")
@@ -57,4 +60,27 @@ public class ProblemSubjectController {
         return Result.success(problemSubjects);
     }
 
+    @GetMapping("/random")
+    public Result<?> getRandom(@RequestParam(value = "subjectName") String subjectname, @RequestParam(value = "number") Integer number){
+        LambdaQueryWrapper<ProblemSubject> wrapper = Wrappers.lambdaQuery();
+        wrapper.like(ProblemSubject::getSubjectName, subjectname);
+        List<ProblemSubject> problemSubjects = problemSubjectMapper.selectList(wrapper);
+        List<ProblemSubject> randomSubjects = new ArrayList<>();
+        int total = problemSubjects.size();
+        int[] vis = new int[total];
+        Arrays.fill(vis, 0);
+        Random rand = new Random();
+        while(number > 0){
+            int x = rand.nextInt(total);
+            while(vis[x] == 1) {
+                x = rand.nextInt(total);
+            }
+            vis[x] = 1;
+            number --;
+            ProblemSubject problemSubject = problemSubjects.get(x);
+            problemSubject.setScore(rand.nextInt(20) + 1);
+            randomSubjects.add(problemSubject);
+        }
+        return Result.success(randomSubjects);
+    }
 }
