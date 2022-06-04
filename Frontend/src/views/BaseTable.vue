@@ -118,12 +118,10 @@ export default {
             // 二次确认删除
             ElMessageBox.confirm("确定要删除吗？", "提示", {
                 type: "warning",
-            })
-                .then(() => {
+            }).then(() => {
                     ElMessage.success("删除成功");
                     tableData.value.splice(index, 1);
-                })
-                .catch(() => {});
+                }).catch(() => {});
         };
 
         // 表格编辑时弹窗和保存

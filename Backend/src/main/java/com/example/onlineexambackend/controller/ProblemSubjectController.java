@@ -52,7 +52,7 @@ public class ProblemSubjectController {
         return Result.success(problemSubjects);
     }
 
-    @GetMapping("/subject")
+    @GetMapping("/subjectName")
     public Result<?> getBySubjectName(@RequestParam(value = "subjectName") String subjectname){
         LambdaQueryWrapper<ProblemSubject> wrapper = Wrappers.lambdaQuery();
         wrapper.like(ProblemSubject::getSubjectName, subjectname);

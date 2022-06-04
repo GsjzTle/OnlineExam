@@ -10,12 +10,11 @@
         <el-card>
           <template #header>
             <div>
-              <h1 style="font-size: 30px;font-weight: bolder;text-align: center">#{{ visProblem.index + 1 }}.
-                {{ visProblem.title }}</h1>
+              <h1 style="font-size: 30px;font-weight: bolder;text-align: center">#{{ visProblem.index + 1 }}. {{ visProblem.title }}</h1>
             </div>
           </template>
           <div style="text-align: center;margin-top: -10px; font-weight: bolder">
-            <el-tag type="warning" size="small">{{ visProblem.score }} 分</el-tag>
+            <el-tag type="success" size="small" effect="dark">{{ visProblem.score }} 分</el-tag>
           </div>
           <h3>题目描述</h3>
           <p style="word-break: break-all;margin-top: 15px">{{ visProblem.description }}</p>
@@ -97,7 +96,7 @@ export default {
       reply: '',
       visProblem: {},
       Exam: {},
-      User:{uid:"10"},
+      User:{uid:"6"},
       ProblemChoice: [],
       ProblemSubject: [],
       ProblemData: [],
@@ -154,10 +153,12 @@ export default {
       this.ProgressPercentage = null
     },
     setSession() {
-      sessionStorage.setItem("uid", JSON.stringify(this.User.uid))
-      sessionStorage.setItem("eid", JSON.stringify(this.Exam.eid));
-      sessionStorage.setItem("user_choice", JSON.stringify(this.UserChoice));
-      sessionStorage.setItem("user_subject", JSON.stringify(this.UserSubject))
+      let exam_user = {
+        eid: this.Exam.eid,
+        UserChoice: this.UserChoice,
+        UserSubject: this.UserSubject
+      }
+      sessionStorage.setItem("EXAM_" + this.Exam.eid + "_USER", JSON.stringify(exam_user));
     },
     submitExam() {
       if(this.nowpercentage == 100) {
@@ -179,6 +180,8 @@ export default {
         data.userChoice = this.UserChoice.join("|#|")
         data.userSubject = this.UserSubject.join("|#|")
         data.gradeChoice = -1
+        if(this.ProblemSubject.length == 0) data.gradeSubject = -2
+        if(this.ProblemChoice.length == 0) data.gradeChoice = -2
         data.gradeSubject = -1
         data.gradeTotal = -1
         data.submitted = 1
@@ -189,12 +192,11 @@ export default {
           }
           else this.$message({type:'error', message:res.msg})
         })
-      })
+      }).catch(() => {});
     }
   },
   created() {
-    // if (this.Exam.eid != this.$route.query.eid) sessionStorage.clear()
-    request.get('/exam', {params: {eid: "1",}}).then(res => {
+    request.get('/exam', {params: {eid: this.$route.query.eid == null ? 1 : this.$route.query.eid,}}).then(res => {
       this.Exam = res.data
       let ProblemChoice = res.data.problemChoice.split("|#|")
       let ProblemSubject = res.data.problemSubject.split("|#|")
@@ -224,12 +226,18 @@ export default {
         this.ProblemData.push(x)
       }
       this.load(this.ProblemChoice[0].pid, 1, 0)
-      let user_choice = sessionStorage.getItem("user_choice");
-      let user_subject = sessionStorage.getItem("user_subject");
-      if (user_choice != null) this.UserChoice = JSON.parse(user_choice);
-      else for(let i = 0 ; i < ProblemChoice.length ; i ++) this.UserChoice[i] = -1
-      if (user_subject != null) this.UserSubject = JSON.parse(user_subject);
-      else for(let i = 0 ; i < ProblemSubject.length ; i ++) this.UserSubject[i] = "";
+      let exam_user = sessionStorage.getItem("EXAM_" + this.Exam.eid + "_USER");
+      if(exam_user != null) {
+        exam_user = JSON.parse(exam_user)
+        console.log(exam_user)
+        if(exam_user.UserChoice != null) this.UserChoice = exam_user.UserChoice
+        else for(let i = 0 ; i < ProblemChoice.length ; i ++) this.UserChoice[i] = -1;
+        if(exam_user.UserSubject != null) this.UserSubject = exam_user.UserSubject
+        else for(let i = 0 ; i < ProblemSubject.length ; i ++) this.UserSubject[i] = "";
+      } else {
+        for(let i = 0 ; i < ProblemChoice.length ; i ++) this.UserChoice[i] = -1
+        for(let i = 0 ; i < ProblemSubject.length ; i ++) this.UserSubject[i] = "";
+      }
     })
     this.ProgressPercentage()
   }

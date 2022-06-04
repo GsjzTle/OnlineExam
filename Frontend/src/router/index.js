@@ -149,6 +149,14 @@ const routes = [
                 component: () => import ('../views/Exam/AddExam.vue')
             },
             {
+                path:"/editorexam",
+                name:"editorexam",
+                meta: {
+                    title: '编辑考试'
+                },
+                component: () => import ('../views/Exam/EditorExam.vue')
+            },
+            {
                 path:"/test",
                 name:"test",
                 meta: {

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="container">
-<!--      班级选择器-->
+      <!--      班级选择器-->
       <div class="handle-box">
         <el-select v-model="select_class" placeholder="请选择班级" class="handle-select mr10">
           <el-option label="所有班级" value=""></el-option>
@@ -14,10 +14,10 @@
         <el-input v-model="search_title" placeholder="请输入考试名称" class="handle-input mr10"></el-input>
         <el-button type="primary" icon="el-icon-search" @click="load">搜索</el-button>
       </div>
-<!--      表格-->
+      <!--      表格-->
       <el-table :data="ExamData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-        <el-table-column prop="uid" label="学生姓名" width="78" align="center"></el-table-column>
+        <el-table-column prop="realName" label="学生姓名" width="78" align="center"></el-table-column>
         <el-table-column label="班级" width="160" align="center">
           <template #default="scope">{{ scope.row.className }}</template>
         </el-table-column>
@@ -25,25 +25,37 @@
         <el-table-column prop="title" label="考试名称"></el-table-column>
         <el-table-column label="选择题得分" width="170" align="center">
           <template #default="scope">
-            <div v-if="scope.row.gradeChoice == -1">
+            <div v-if="scope.row.gradeChoice == -2">
+              <el-button type="danger" plain size="small" style="float: right">本场考试没有选择题
+              </el-button>
+            </div>
+            <div v-else-if="scope.row.gradeChoice == -1">
               <el-tag type="info">未评测</el-tag>
               <el-button type="warning" plain size="small" style="float: right" @click="AutoJudge(scope.row)">自动评测
               </el-button>
             </div>
             <div v-else>
               <el-tag type="success" size="large">{{ scope.row.gradeChoice }} 分</el-tag>
+              <el-button type="warning" plain size="small" style="float: right" @click="AutoJudge(scope.row)">重新评测
+              </el-button>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="主观题得分" align="center" width="150">
+        <el-table-column label="主观题得分" align="center" width="170">
           <template #default="scope">
-            <div v-if="scope.row.gradeSubject == -1">
+            <div v-if="scope.row.gradeSubject == -2">
+              <el-button type="danger" plain size="small" style="float: right">本场考试没有主观题
+              </el-button>
+            </div>
+            <div v-else-if="scope.row.gradeSubject == -1">
               <el-tag type="info">未批阅</el-tag>
-              <el-button type="warning" plain size="small" style="float: right" @click="ManualJudge(scope.row)">批阅
+              <el-button type="warning" plain size="small" style="float: right" @click="ManualJudge(scope.row)">手动批阅
               </el-button>
             </div>
             <div v-else>
               <el-tag type="success" size="large">{{ scope.row.gradeSubject }} 分</el-tag>
+              <el-button type="warning" plain size="small" style="float: right" @click="ManualJudge(scope.row)">重新批阅
+              </el-button>
             </div>
           </template>
         </el-table-column>
@@ -60,7 +72,7 @@
         <el-table-column prop="submitTime" label="提交时间" align="center" width="180"></el-table-column>
         <el-table-column label="操作" width="180" align="center" fixed="right">
           <template #default="scope">
-            <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑
+            <el-button type="text" icon="el-icon-lx-attention" @click="handleEdit(scope.row)">查看
             </el-button>
             <el-popconfirm title="你确定要删除这条记录吗?" @confirm="deleteExamData(scope.row.id)">
               <template #reference>
@@ -71,6 +83,7 @@
         </el-table-column>
       </el-table>
     </div>
+    <!--  分页-->
     <div style="margin-top: 10px;">
       <el-pagination @size-change="handleSizeChange"
                      @current-change="handleCurrentChange"
@@ -85,7 +98,6 @@
     <!--    弹框 -->
     <el-dialog
         v-model="dialogVisible"
-        title="主观题批阅"
         width="60%"
         :before-close="handleClose"
         center
@@ -98,37 +110,38 @@
           v-for="(problem, index) in ProblemSubject"
           :disable-transitions="false"
           style="margin: 5px"
-          @click="load1(problem.pid, problem.index)">
+          @click="load1(problem.index)">
         {{ problem.index + 1 }}
       </el-button>
-      <el-carousel :interval="10000000" @change="changeSubject" :autoplay="false" height="450px">
+      <el-carousel @change="changeSubject" :autoplay="false" height="60vh" type="card">
         <el-carousel-item v-for="(problem, index) in ProblemSubject">
-          <center>
-            <el-tag type="primary"> 分值： {{ visProblem.score }}</el-tag>
-          </center>
-          <el-card style="margin-top: 10px">
+          <div style="text-align: center; vertical-align: center">
+            <h1 style="color: #000000">#{{ index + 1 }}. {{ problem.title }}</h1>
+            <el-tag type="success" effect="dark" size="small" style="font-size: 15px; font-weight: bolder">分值：
+              {{ problem.score }}
+            </el-tag>
+          </div>
+          <el-card style="margin-top: 10px;">
             <template #header>
               <h2 style="text-align: center;"><b>题目描述</b></h2>
             </template>
-            <p style="word-break: break-all;">{{ visProblem.description }}</p>
+            <p style="word-break: break-all;">{{ problem.description }}</p>
           </el-card>
-          <el-card style="margin-top: 10px; text-align: center">
+          <el-card style="margin-top: 10px;">
             <template #header>
-              <h2><b>学生答案</b></h2>
+              <h2 style="text-align: center">学生答案</h2>
             </template>
-            <p style="word-break: break-all;">{{UserSubjcet[index]}}</p>
+            <p style="word-break: break-all;">{{ UserSubjcet[index] }}</p>
           </el-card>
-          <el-card style="margin-top: 10px">
+          <el-card style="margin-top: 10px;">
             <template #header>
               <h2 style="text-align: center;"><b>教师打分</b></h2>
             </template>
             <center>
-              <el-input-number v-model.number="teacherScore[visProblem.index]" :min="0" :max="visProblem.score"
+              <el-input-number v-model.number="teacherScore[index]" :min="0" :max="visProblem.score"
                                @change="setSession"/>
             </center>
           </el-card>
-
-
         </el-carousel-item>
       </el-carousel>
       <template #footer>
@@ -157,20 +170,22 @@ export default {
       currentPage: 1,
       ExamData: [],
       nowdata: {}, // 当前批阅的数据
-      UserSubjcet:[],
-      Classes:[],  // 班级
-      Subjects:[], // 学科
+      UserSubjcet: [],
+      Classes: [],  // 班级
+      Subjects: [], // 学科
       ProblemSubject: [],
       teacherScore: [],
-      visProblem: null,
+      visProblem: {
+        index: 0
+      },
     }
   },
   methods: {
     changeSubject(index) {
-      this.load1(this.ProblemSubject[index].pid, index)
+      this.load1(index)
     },
     setSession() {
-      sessionStorage.setItem(this.nowdata.id.toString(), JSON.stringify(this.teacherScore));
+      sessionStorage.setItem("teacherScore_" + this.nowdata.id.toString(), JSON.stringify(this.teacherScore));
     },
     getColor(problem) {
       if (this.teacherScore[problem.index] != null) return "primary"
@@ -179,6 +194,7 @@ export default {
     selectColor(problem) {
       return this.visProblem.index != problem.index;
     },
+    // 加载所有提交数据
     load() {
       request.get("/examdata/all", {
         params: {
@@ -192,27 +208,18 @@ export default {
         this.ExamData = res.data.records
         for (let i = 0; i < this.ExamData.length; i++) {
           if (this.ExamData[i].gradeChoice == -1 || this.ExamData[i].gradeSubject == -1) this.ExamData[i].gradeTotal = -1
-          else this.ExamData[i].gradeTotal = this.ExamData[i].gradeChoice + this.ExamData[i].gradeSubject
-          request.get("/user/realname", {params:{uid: this.ExamData[i].uid}}).then(res => {
+          else this.ExamData[i].gradeTotal = Math.max(0,this.ExamData[i].gradeChoice) + Math.max(0,this.ExamData[i].gradeSubject)
+          request.get("/user/realname", {params: {uid: this.ExamData[i].uid}}).then(res => {
             this.ExamData[i].realName = res.data.realName
           })
         }
         this.total = res.data.total
-        console.log(this.ExamData)
       })
     },
-    load1(pid, index) {
-      request.get("/problemsubject", {
-            params: {
-              "pid": pid
-            }
-          }
-      ).then(res => {
-        this.visProblem = res.data
-        this.visProblem.index = index
-        this.visProblem.score = this.ProblemSubject[index].score
-        this.dialogVisible = true
-      })
+    // 根据 pid 获取某道主观题
+    load1(index) {
+      this.visProblem = this.ProblemSubject[index]
+      this.dialogVisible = true
     },
     handleSizeChange(pageSize) {
       this.pageSize = pageSize
@@ -223,12 +230,27 @@ export default {
       this.load()
     },
     handleClose() {
-      ElMessageBox.confirm('你确定要退出批阅吗?')
+      ElMessageBox.confirm('你确定要退出批阅吗?',"提示",{
+        type:"warning"
+      })
           .then(() => {
             this.dialogVisible = false
           })
           .catch(() => {
           })
+    },
+    handleEdit(exam_user) {
+      this.$router.push({
+        path: '/editorexam',
+        query: {
+          eid: exam_user.eid,
+          id: exam_user.id,
+          userChoice: exam_user.userChoice,
+          userSubject: exam_user.userSubject,
+          autoScore: exam_user.autoScore,
+          teacherScore: exam_user.teacherScore,
+        }
+      })
     },
     deleteExamData(id) {
       request.delete("/examdata", {params: {id: id}}).then(res => {
@@ -241,6 +263,13 @@ export default {
     },
     AutoJudge(exam_user) {
       request.put("/examdata/choicejudge", exam_user).then(res => {
+        if(res.code == -1) {
+          ElMessage({
+            type: "error",
+            message: res.msg
+          })
+          return
+        }
         ElMessage({
           type: "success",
           message: "评测结束"
@@ -251,54 +280,55 @@ export default {
     ManualJudge(exam_user) {
       this.nowdata = exam_user
       this.UserSubjcet = exam_user.userSubject.split("|#|")
-      let teacherScore = sessionStorage.getItem(this.nowdata.id.toString());
+      let teacherScore = sessionStorage.getItem("teacherScore_" + this.nowdata.id.toString());
       if (teacherScore != null) this.teacherScore = JSON.parse(teacherScore);
       else this.teacherScore = []
       request.get("/exam", {
         params: {
           eid: exam_user.eid
         }
-      }).then(res => {
+      }).then( async res => {
+        if(res.data.problemSubject.length == 0) {
+          ElMessage({
+            type: "error",
+            message: "本场考试没有主观题"
+          })
+          return
+        }
         let ProblemSubject = res.data.problemSubject.split("|#|")
         let ScoreSubject = res.data.scoreSubject.split("|#|")
         this.ProblemSubject = []
         for (let i = 0; i < ProblemSubject.length; i++) {
-          let x = {
-            "pid": ProblemSubject[i],
-            "type": 2,
-            "index": i,
-            "score": ScoreSubject[i]
-          }
-          this.ProblemSubject.push(x)
+          await request.get("/problemsubject", {params: {pid: ProblemSubject[i]}}).then(res1 => {
+            let x = res1.data
+            x.index = i
+            x.score = ScoreSubject[i]
+            x.type = 2
+            this.ProblemSubject.push(x)
+          })
         }
-        this.load1(this.ProblemSubject[0].pid, 0)
+        this.load1(0)
       })
     },
     submitJudge() {
       let score = 0
       for (let i = 0; i < this.ProblemSubject.length; i++) {
         if (this.teacherScore[i] == null) {
-          ElMessage({
-            type: "warning",
-            message: "未完成所有题目批阅"
-          })
+          ElMessage({type: "warning", message: "未完成所有题目批阅"})
           return
         }
         score += this.teacherScore[i]
       }
       this.nowdata.gradeSubject = score
       this.nowdata.teacherScore = this.teacherScore.join("|#|")
-      if(this.nowdata.gradeSubject == -1 || this.nowdata.gradeChoice == -1) this.nowdata.gradeTotal = -1
+      if (this.nowdata.gradeSubject == -1 || this.nowdata.gradeChoice == -1) this.nowdata.gradeTotal = -1
       this.nowdata.gradeTotal = this.nowdata.gradeChoice + this.nowdata.gradeSubject
       request.put("/examdata/subjectjudge", this.nowdata).then(res => {
         this.load()
         this.dialogVisible = false
-        ElMessage({
-          type: "success",
-          message: "批阅完成"
-        })
+        ElMessage({type: "success", message: "批阅完成"})
       })
-    }
+    },
   },
   created() {
     this.load()
@@ -308,7 +338,7 @@ export default {
     request.get("/subject/all").then(res => {
       this.Subjects = res.data
     })
-  }
+  },
 };
 </script>
 
@@ -346,9 +376,39 @@ export default {
   height: 40px;
 }
 
-/deep/ .el-dialog--center .el-dialog__body {
-
-  height: 500px;
-
+/deep/ .el-carousel__item.is-animating {
+  background: #f7d1d1;
 }
+
+/deep/ .el-dialog--center .el-dialog__body {
+  text-align: initial;
+  padding: 0 10px 0 10px;
+  background: #baddde;
+}
+
+/deep/ .el-card {
+  border: 1px solid #0c0c0c;
+}
+
+/deep/ .el-card__header {
+  background-color: #7497b4;
+  padding: 1px
+}
+
+/deep/ .el-carousel__indicator--horizontal button {
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+/deep/ .el-carousel__indicator--horizontal.is-active button {
+  width: 24px;
+  height: 8px;
+  background: #ffffff;
+  opacity: 0.5;
+  border-radius: 10px;
+}
+
 </style>

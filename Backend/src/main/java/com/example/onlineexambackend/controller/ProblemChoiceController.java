@@ -52,7 +52,7 @@ public class ProblemChoiceController {
         return Result.success(problemChoices);
     }
 
-    @GetMapping("/subject")
+    @GetMapping("/subjectName")
     public Result<?> getBySubjectName(@RequestParam(value = "subjectName") String subjectname){
         LambdaQueryWrapper<ProblemChoice> wrapper = Wrappers.lambdaQuery();
         wrapper.like(ProblemChoice::getSubjectName, subjectname);
@@ -78,7 +78,7 @@ public class ProblemChoiceController {
             vis[x] = 1;
             number --;
             ProblemChoice problemChoice = problemChoices.get(x);
-            problemChoice.setScore(rand.nextInt(20) + 1);
+            problemChoice.setScore(rand.nextInt(10) + 1);
             randomChoices.add(problemChoice);
         }
         return Result.success(randomChoices);

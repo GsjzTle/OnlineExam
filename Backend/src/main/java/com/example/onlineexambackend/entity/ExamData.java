@@ -19,8 +19,8 @@ public class ExamData {
     private String className;
     private String subjectName;
     private String title;
-    private String answerChoice;
-    private String teacherScore;
+    private String autoScore; // 选择题自动评分
+    private String teacherScore; // 主观题教师评分
     private String scoreChoice;
     private String scoreSubject;
     private String userChoice;

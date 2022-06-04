@@ -21,7 +21,6 @@ public class Exam {
     private String description;
     private String problemChoice; // 选择题列表
     private String problemSubject; // 主观题列表
-    private String answerChoice; // 选择题答案
     private String scoreChoice; // 选择题分值
     private String scoreSubject; // 主观题分值
     private Integer visible;
