@@ -24,6 +24,11 @@ public class UserController {
     @Resource
     private UserMapper userMapper;
 
+    @DeleteMapping
+    public Result<?> deleteById(@RequestParam(value = "uid") Integer uid){
+        userMapper.deleteById(uid);
+        return Result.success();
+    }
     @GetMapping("/all")
     public Result<?> findPage(@RequestParam(defaultValue = "1") Integer pageNum,
                               @RequestParam(defaultValue = "10") Integer pageSize,

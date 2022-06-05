@@ -14,7 +14,7 @@
  Date: 06/06/2022 00:25:07
 */
 
-SET NAMES utf8mb4;
+SET NAMES utf8;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
@@ -25,7 +25,7 @@ CREATE TABLE `class_class` (
   `cid` int NOT NULL AUTO_INCREMENT,
   `class_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`cid`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- ----------------------------
 -- Records of class_class
@@ -51,18 +51,18 @@ CREATE TABLE `exam_data` (
   `subject_name` varchar(255) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `auto_score` varchar(255) DEFAULT NULL,
-  `teacher_score` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `score_choice` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '选择题各题分值',
-  `score_subject` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '填空题各题分值',
-  `user_choice` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '用户的答案1',
-  `user_subject` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '用户的答案2',
+  `teacher_score` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `score_choice` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '选择题各题分值',
+  `score_subject` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '填空题各题分值',
+  `user_choice` text CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT '用户的答案1',
+  `user_subject` text CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT '用户的答案2',
   `grade_choice` int DEFAULT '-1' COMMENT '用户选择题得分',
   `grade_subject` int DEFAULT '-1' COMMENT '用户主观题得分',
   `grade_total` int DEFAULT NULL,
   `submitted` int NOT NULL DEFAULT '0',
   `submit_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- ----------------------------
 -- Records of exam_data
@@ -82,9 +82,9 @@ DROP TABLE IF EXISTS `exam_exam`;
 CREATE TABLE `exam_exam` (
   `eid` int NOT NULL AUTO_INCREMENT,
   `uid` int NOT NULL,
-  `class_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `class_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `subject_name` varchar(255) NOT NULL,
-  `author` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `author` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `title` varchar(255) NOT NULL,
   `description` text,
   `problem_choice` varchar(255) DEFAULT NULL,
@@ -96,7 +96,7 @@ CREATE TABLE `exam_exam` (
   `end_time` datetime DEFAULT NULL,
   `create_time` datetime DEFAULT NULL,
   PRIMARY KEY (`eid`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- ----------------------------
 -- Records of exam_exam
@@ -125,7 +125,7 @@ CREATE TABLE `problem_choice` (
   `visible` int DEFAULT NULL,
   `create_time` datetime DEFAULT NULL,
   PRIMARY KEY (`pid`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- ----------------------------
 -- Records of problem_choice
@@ -150,11 +150,11 @@ CREATE TABLE `problem_subject` (
   `subject_name` varchar(255) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `standard_answer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `visible` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `standard_answer` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `visible` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `create_time` datetime DEFAULT NULL,
   PRIMARY KEY (`pid`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- ----------------------------
 -- Records of problem_subject
@@ -176,7 +176,7 @@ CREATE TABLE `subject_subject` (
   `sid` int NOT NULL AUTO_INCREMENT,
   `subject_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`sid`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- ----------------------------
 -- Records of subject_subject
@@ -196,16 +196,16 @@ COMMIT;
 DROP TABLE IF EXISTS `user_user`;
 CREATE TABLE `user_user` (
   `uid` int NOT NULL AUTO_INCREMENT,
-  `real_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '???',
-  `class_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '未加入班级',
-  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `real_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '???',
+  `class_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '未加入班级',
+  `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `description` text CHARACTER SET utf8 COLLATE utf8_general_ci,
   `role` int NOT NULL DEFAULT '1',
   `email` varchar(255) DEFAULT NULL,
   `create_time` datetime DEFAULT NULL,
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=10002 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10002 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- ----------------------------
 -- Records of user_user
