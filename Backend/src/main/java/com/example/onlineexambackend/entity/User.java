@@ -17,7 +17,10 @@ public class User {
     private String className;
     private String username;
     private String password;
+    private String description;
     private Integer role;
+    private String email;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 }
+

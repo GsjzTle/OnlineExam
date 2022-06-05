@@ -149,12 +149,20 @@ const routes = [
                 component: () => import ('../views/Exam/AddExam.vue')
             },
             {
-                path:"/editorexam",
-                name:"editorexam",
+                path:"/showexam",
+                name:"showexam",
                 meta: {
-                    title: '编辑考试'
+                    title: '查看考试'
                 },
-                component: () => import ('../views/Exam/EditorExam.vue')
+                component: () => import ('../views/Exam/ShowExam.vue')
+            },
+            {
+                path:"/myexam",
+                name:"myexam",
+                meta: {
+                    title: '我的考试'
+                },
+                component: () => import ('../views/Exam/MyExam.vue')
             },
             {
                 path:"/test",
@@ -165,13 +173,22 @@ const routes = [
                 component: () => import ('../views/Exam/Test.vue')
             },
         ]
-    }, {
+    },
+    {
         path: "/login",
         name: "Login",
         meta: {
             title: '登录'
         },
         component: () => import ( /* webpackChunkName: "login" */ "../views/Login.vue")
+    },
+    {
+        path: "/register",
+        name: "Register",
+        meta: {
+            title: '注册'
+        },
+        component: () => import ( /* webpackChunkName: "login" */ "../views/Register.vue")
     }
 ];
 
@@ -181,9 +198,9 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    document.title = `${to.meta.title} | vue-manage-system`;
-    const role = localStorage.getItem('ms_username');
-    if (!role && to.path !== '/login') {
+    document.title = `${to.meta.title} | 在线考试系统`;
+    const role = localStorage.getItem('_User');
+    if (!role && to.path !== '/login' && to.path !== '/register') {
         next('/login');
     } else if (to.meta.permission) {
         // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已

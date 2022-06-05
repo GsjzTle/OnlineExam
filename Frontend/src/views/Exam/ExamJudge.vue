@@ -11,7 +11,7 @@
           <el-option label="所有科目" value=""></el-option>
           <el-option v-for="subject in Subjects" :label="subject.subjectName" :value="subject.subjectName"/>
         </el-select>
-        <el-input v-model="search_title" placeholder="请输入考试名称" class="handle-input mr10"></el-input>
+        <el-input v-model="search_title" placeholder="请输入考试名称" class="handle-input mr10" clearable></el-input>
         <el-button type="primary" icon="el-icon-search" @click="load">搜索</el-button>
       </div>
       <!--      表格-->
@@ -69,7 +69,11 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="submitTime" label="提交时间" align="center" width="180"></el-table-column>
+        <el-table-column label="提交时间" align="center" width="180">
+          <template #default="scope">
+            <p style="font-family: -webkit-pictograph,cursive;font-size: 17px">{{scope.row.submitTime}}</p>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="180" align="center" fixed="right">
           <template #default="scope">
             <el-button type="text" icon="el-icon-lx-attention" @click="handleEdit(scope.row)">查看
@@ -139,7 +143,7 @@
             </template>
             <center>
               <el-input-number v-model.number="teacherScore[index]" :min="0" :max="visProblem.score"
-                               @change="setSession"/>
+                               @change="setLocalStorage"/>
             </center>
           </el-card>
         </el-carousel-item>
@@ -184,8 +188,8 @@ export default {
     changeSubject(index) {
       this.load1(index)
     },
-    setSession() {
-      sessionStorage.setItem("teacherScore_" + this.nowdata.id.toString(), JSON.stringify(this.teacherScore));
+    setLocalStorage() {
+      window.localStorage.setItem("teacherScore_" + this.nowdata.id.toString(), JSON.stringify(this.teacherScore));
     },
     getColor(problem) {
       if (this.teacherScore[problem.index] != null) return "primary"
@@ -209,8 +213,8 @@ export default {
         for (let i = 0; i < this.ExamData.length; i++) {
           if (this.ExamData[i].gradeChoice == -1 || this.ExamData[i].gradeSubject == -1) this.ExamData[i].gradeTotal = -1
           else this.ExamData[i].gradeTotal = Math.max(0,this.ExamData[i].gradeChoice) + Math.max(0,this.ExamData[i].gradeSubject)
-          request.get("/user/realname", {params: {uid: this.ExamData[i].uid}}).then(res => {
-            this.ExamData[i].realName = res.data.realName
+          request.get("/user", {params: {uid: this.ExamData[i].uid}}).then(res1 => {
+            this.ExamData[i].realName = res1.data.realName
           })
         }
         this.total = res.data.total
@@ -241,14 +245,10 @@ export default {
     },
     handleEdit(exam_user) {
       this.$router.push({
-        path: '/editorexam',
+        path: '/showexam',
         query: {
           eid: exam_user.eid,
-          id: exam_user.id,
-          userChoice: exam_user.userChoice,
-          userSubject: exam_user.userSubject,
-          autoScore: exam_user.autoScore,
-          teacherScore: exam_user.teacherScore,
+          uid: exam_user.uid,
         }
       })
     },
@@ -280,9 +280,13 @@ export default {
     ManualJudge(exam_user) {
       this.nowdata = exam_user
       this.UserSubjcet = exam_user.userSubject.split("|#|")
-      let teacherScore = sessionStorage.getItem("teacherScore_" + this.nowdata.id.toString());
-      if (teacherScore != null) this.teacherScore = JSON.parse(teacherScore);
-      else this.teacherScore = []
+      if(exam_user.teacherScore != null && exam_user.teacherScore.length != 0) {
+        this.teacherScore = exam_user.teacherScore.split("|#|")
+      } else {
+        let teacherScore = window.localStorage.getItem("teacherScore_" + this.nowdata.id.toString());
+        if (teacherScore != null) this.teacherScore = JSON.parse(teacherScore);
+        else this.teacherScore = []
+      }
       request.get("/exam", {
         params: {
           eid: exam_user.eid
@@ -348,7 +352,7 @@ export default {
 }
 
 .handle-select {
-  width: 120px;
+  width: 180px;
 }
 
 .handle-input {

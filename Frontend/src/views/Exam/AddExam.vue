@@ -33,7 +33,7 @@
                 <span style="color: #ff1313;font-size: 14px">* </span>
                 <span style="font-size: 14px">考试名称</span>
               </template>
-              <el-input placeholder="请输入考试名称" v-model="EXAM.title" maxlength="20" show-word-limit @input="setSession"/>
+              <el-input placeholder="请输入考试名称" v-model="EXAM.title" maxlength="20" show-word-limit @input="setLocalStorage"/>
             </el-descriptions-item>
             <el-descriptions-item label-align="right" align="center">
               <template #label>
@@ -41,7 +41,7 @@
                 <span style="font-size: 14px">开始时间</span>
               </template>
               <el-date-picker value-format="YYYY-MM-DD HH:mm:ss" size="large" v-model="EXAM.beginTime" type="datetime" placeholder="请选择时间"
-                              @change="setSession"/>
+                              @change="setLocalStorage"/>
             </el-descriptions-item>
             <el-descriptions-item label-align="right" align="center">
               <template #label>
@@ -49,7 +49,7 @@
                 <span style="font-size: 14px">结束时间</span>
               </template>
               <el-date-picker value-format="YYYY-MM-DD HH:mm:ss" size="large" v-model="EXAM.endTime" type="datetime" placeholder="请选择时间"
-                              @change="setSession"/>
+                              @change="setLocalStorage"/>
             </el-descriptions-item>
             <el-descriptions-item label-align="center" align="center">
               <template #label>
@@ -57,7 +57,7 @@
                 <span style="font-size: 14px">班级</span>
               </template>
               <el-select v-model="EXAM.className" placeholder="请选择班级" class="handle-select mr10" size="large"
-                         @change="setSession">
+                         @change="setLocalStorage">
                 <el-option v-for="classes in Classes" :label="classes.className" :value="classes.className"/>
               </el-select>
             </el-descriptions-item>
@@ -67,7 +67,7 @@
                 <span style="font-size: 14px">科目</span>
               </template>
               <el-select v-model="EXAM.subjectName" placeholder="请选择科目" class="handle-select mr10" size="large"
-                         @change="setSession">
+                         @change="setLocalStorage">
                 <el-option v-for="subject in Subjects" :label="subject.subjectName" :value="subject.subjectName"/>
               </el-select>
             </el-descriptions-item>
@@ -75,7 +75,7 @@
               <template #label>
                 <span style="font-size: 14px">考试描述</span>
               </template>
-              <el-input placeholder="请输入考试描述" v-model="EXAM.description" type="textarea" @input="setSession"/>
+              <el-input placeholder="请输入考试描述" v-model="EXAM.description" type="textarea" @input="setLocalStorage"/>
             </el-descriptions-item>
           </el-descriptions>
           <el-switch
@@ -85,7 +85,7 @@
               style="margin-top: 30px; margin-bottom:30px;float: right"
               inactive-value="0"
               active-value="1"
-              @change="setSession"
+              @change="setLocalStorage"
           />
         </el-card>
       </el-tab-pane>
@@ -257,6 +257,7 @@ export default {
       ChoiceNum: 3, // 要随机生成的选择题数量
       SubjectNum: 3, // 要随机生成的主观题数量
       score: "",
+      ok:false,
     }
   },
   methods: {
@@ -283,7 +284,7 @@ export default {
       if (this.VisSubject[data.pid] == 1) {
         ElMessage({
           type: "warning",
-          message: "已添加，请勿重复操作"
+          message: "已添加，请勿重复添加"
         })
         return;
       }
@@ -300,7 +301,7 @@ export default {
       if (this.VisChoice[data.pid] == 1) {
         ElMessage({
           type: "warning",
-          message: "已添加，请勿重复操作"
+          message: "已添加，请勿重复添加"
         })
         return;
       }
@@ -351,13 +352,15 @@ export default {
       })
     },
     // 存储考试信息
-    setSession() {
-      sessionStorage.setItem("EXAM", JSON.stringify(this.EXAM));
+    setLocalStorage() {
+      window.localStorage.setItem("EXAM", JSON.stringify(this.EXAM));
       this.Check1()
     },
     goNext(){
-      this.activeName = 'second'
       this.Check2()
+      this.load()
+      this.activeName = "second"
+      this.ok = true
     },
     Check1() {
       if (this.EXAM.title == null || this.EXAM.title.length == 0 || this.EXAM.beginTime == null ||
@@ -410,6 +413,16 @@ export default {
         ElMessageBox.alert('考试时间太短，请进行调整!', '提示', {confirmButtonText: 'OK', type: "warning"})
         this.activeName = "first"
         return false
+      }
+      if(this.ok) {
+        this.load()
+        this.Check2()
+        this.ok = false
+        return true
+      }
+      if(this.activeName == "second"){
+        this.Check1()
+        return true;
       }
       this.load()
       this.Check2()
@@ -471,7 +484,8 @@ export default {
       this.dialogVisible = false
     },
     AddExam(){
-      let user = sessionStorage.getItem("user")
+      let user = window.localStorage.getItem("_User")
+      console.log(this.activeName)
       // 暂未对 user 表进行处理，先用临时数据代替一下
       if(user == null) {
           this.User.uid = 1
@@ -494,7 +508,6 @@ export default {
       this.EXAM.problemSubject = problem_Subject.join("|#|")
       this.EXAM.scoreChoice = score_Choice.join("|#|")
       this.EXAM.scoreSubject = score_Subject.join("|#|")
-      console.log(this.EXAM)
       request.post("/exam", this.EXAM).then(res => {
         ElMessage({
           type: "success",
@@ -512,7 +525,7 @@ export default {
     request.get("/subject/all").then(res => {
       this.Subjects = res.data
     })
-    let EXAM = sessionStorage.getItem("EXAM")
+    let EXAM = window.localStorage.getItem("EXAM")
     if (EXAM != null) this.EXAM = JSON.parse(EXAM)
     this.Check1()
   }

@@ -1,8 +1,7 @@
 <template>
-  <el-table :data="tableData" style="width: 100%">
-    <el-table-column prop="id" label="编号" width="180"></el-table-column>
-    <el-table-column prop="name" label="名称" width="180"></el-table-column>
-  </el-table>
+<div>
+  {{ha}}
+</div>
 </template>
 
 <script>
@@ -11,6 +10,7 @@ import request from "../../utils/request";
 export default {
   data() {
     return {
+      ha:"",
       realName: "haha",
       tableData:[{
         id:"1",
@@ -21,19 +21,28 @@ export default {
       } , {
         id:"3",
         name:"臭臭",
-      }]
+      }],
     }
   },
   methods: {
     load(){
-      request.get("/user/test", {
-        params:{
-          uid: "3"
-        }
+      // 前端发送请求
+      // 后端接收前端的请求，并处理然后将数据返回给前端（返回响应）
+
+      // 请求地址。请求参数。
+      // get post put delete
+      request.get("/user/get_user",{
+        params: {
+              uid: 1,
+            }
       }).then(res => {
-        this.realName = res.data.realName
+        this.ha = res.data.username
       })
+
+
     }
+
+
   },
   created() {
     this.load()

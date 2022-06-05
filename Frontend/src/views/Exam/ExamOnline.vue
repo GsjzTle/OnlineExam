@@ -23,7 +23,7 @@
             <h3>选择答案</h3>
             <el-radio-group v-model="UserChoice[visProblem.index]">
               <div v-for="(i,index) in visProblem.select ">
-                <el-radio :label="index" size="large" style="margin-top: 20px" @change="setSession"
+                <el-radio :label="index" size="large" style="margin-top: 20px" @change="setLocalStorage"
                           :disabled="submitted==1">{{ i }}
                 </el-radio>
               </div>
@@ -35,7 +35,7 @@
                       v-model="UserSubject[visProblem.index - ProblemChoice.length]"
                       type="textarea" placeholder="请将答案填写在此方框中"
                       :disabled="submitted == 1"
-                      @change="setSession"/>
+                      @input="setLocalStorage"/>
           </div>
           <el-button type="primary" @click="toPrevious" style="margin-left: 37%;margin-top: 10%;"
                      :disabled="visProblem.index == 0">上一题
@@ -49,6 +49,7 @@
       <el-col :offset="1" :span="6">
         <el-card style="width: 100%">
           <el-divider style="margin-top: -2px"><h3>选择题</h3></el-divider>
+          <el-empty :image-size="100" v-if="ProblemChoice.length == 0" style="height: 50px"/>
           <el-button
               :plain="selectColor(problem)"
               :type="getColor(problem)"
@@ -60,6 +61,7 @@
             {{ problem.index + 1 }}
           </el-button>
           <el-divider style="margin-top: 28px"><h3>主观题</h3></el-divider>
+          <el-empty :image-size="100" v-if="ProblemSubject.length == 0"/>
           <el-button
               :plain="selectColor(problem)"
               :type="getColor(problem)"
@@ -96,7 +98,7 @@ export default {
       reply: '',
       visProblem: {},
       Exam: {},
-      User:{uid:"6"},
+      User:{},
       ProblemChoice: [],
       ProblemSubject: [],
       ProblemData: [],
@@ -152,13 +154,13 @@ export default {
       clearInterval(this.ProgressPercentage)
       this.ProgressPercentage = null
     },
-    setSession() {
+    setLocalStorage() {
       let exam_user = {
         eid: this.Exam.eid,
         UserChoice: this.UserChoice,
         UserSubject: this.UserSubject
       }
-      sessionStorage.setItem("EXAM_" + this.Exam.eid + "_USER", JSON.stringify(exam_user));
+      window.localStorage.setItem("EXAM_" + this.Exam.eid + "_USER", JSON.stringify(exam_user));
     },
     submitExam() {
       if(this.nowpercentage == 100) {
@@ -180,13 +182,12 @@ export default {
         data.userChoice = this.UserChoice.join("|#|")
         data.userSubject = this.UserSubject.join("|#|")
         data.gradeChoice = -1
+        data.gradeSubject = -1
         if(this.ProblemSubject.length == 0) data.gradeSubject = -2
         if(this.ProblemChoice.length == 0) data.gradeChoice = -2
-        data.gradeSubject = -1
         data.gradeTotal = -1
         data.submitted = 1
-        console.log(data)
-        request.put("/examdata", data).then(res => {
+        request.post("/examdata", data).then(res => {
           if(res.code == 0) {
             this.$message({type: 'success', message: '提交成功!'});
           }
@@ -196,12 +197,43 @@ export default {
     }
   },
   created() {
-    request.get('/exam', {params: {eid: this.$route.query.eid == null ? 1 : this.$route.query.eid,}}).then(res => {
+    if(this.$route.query.eid == null) {
+      this.$router.push('/404')
+      ElMessage({
+        type: 'error',
+        message: "考试不存在"
+      })
+      return
+    }
+    let user = window.localStorage.getItem("_User")
+    if (user == null) this.$router.push('/login')
+    else this.User = JSON.parse(user)
+    request.get('/exam', {params: {eid: this.$route.query.eid,}}).then(res => {
+      if(res.code == "-1" || (res.data.visible == 1 && this.User.role == 1)) {
+        ElMessage({
+          type: "error",
+          message: res.msg
+        })
+        this.$router.go(-1)
+        return
+      }
       this.Exam = res.data
-      let ProblemChoice = res.data.problemChoice.split("|#|")
-      let ProblemSubject = res.data.problemSubject.split("|#|")
-      let ScoreChoice = res.data.scoreChoice.split("|#|")
-      let ScoreSubject = res.data.scoreSubject.split("|#|")
+      request.get("/examdata/exam_user", {
+        params:{
+          eid: this.$route.query.eid,
+          uid: this.User.uid
+        }
+      }).then(res1 => {
+        if(res1.code == "0") {this.submitted = 1}
+      })
+      let ProblemChoice = []
+      if(res.data.problemChoice.length != 0) ProblemChoice = res.data.problemChoice.split("|#|")
+      let ProblemSubject = []
+      if(res.data.problemSubject.length != 0) ProblemSubject = res.data.problemSubject.split("|#|")
+      let ScoreChoice = []
+      if(res.data.scoreChoice.length != 0) ScoreChoice = res.data.scoreChoice.split("|#|")
+      let ScoreSubject = []
+      if(res.data.scoreSubject.length != 0) ScoreSubject = res.data.scoreSubject.split("|#|")
       let cnt = 0;
       for (let i = 0; i < ProblemChoice.length; i++) {
         let x = {
@@ -225,8 +257,9 @@ export default {
         cnt++;
         this.ProblemData.push(x)
       }
-      this.load(this.ProblemChoice[0].pid, 1, 0)
-      let exam_user = sessionStorage.getItem("EXAM_" + this.Exam.eid + "_USER");
+      if(this.ProblemChoice.length != 0) this.load(this.ProblemChoice[0].pid, 1, 0)
+      else this.load(this.ProblemSubject[0].pid, 2, 0)
+      let exam_user = window.localStorage.getItem("EXAM_" + this.Exam.eid + "_USER");
       if(exam_user != null) {
         exam_user = JSON.parse(exam_user)
         console.log(exam_user)

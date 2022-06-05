@@ -39,12 +39,12 @@ public class ExamDataController {
                     (q2->{q2.like(ExamData::getSubjectName, select_subject);});
 
         Page<ExamData> Page = new Page<>(pageNum, pageSize);
-        Page.addOrder(OrderItem.asc("id")); // 按照 id 排序
+        Page.addOrder(OrderItem.desc("submit_time")); // 按照 id 排序
         Page<ExamData> examDataPage = examDataMapper.selectPage(Page, wrapper);
         return Result.success(examDataPage);
     }
 
-    @PutMapping
+    @PostMapping
     public Result<?> addExamData(@RequestBody ExamData examData){
         LambdaQueryWrapper<ExamData> wrapper = Wrappers.lambdaQuery();
         wrapper.like(ExamData::getEid, examData.getEid()).and
@@ -90,5 +90,18 @@ public class ExamDataController {
     public Result<?> subjectExamData(@RequestBody ExamData examData){
         examDataMapper.updateById(examData);
         return Result.success();
+    }
+    @GetMapping("/exam_user")
+    public Result<?> getExamData(@RequestParam(value = "eid") Integer eid, @RequestParam(value = "uid") Integer uid){
+        LambdaQueryWrapper<ExamData> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(ExamData::getEid, eid).and(q1->{q1.eq(ExamData::getUid, uid);}).last("limit 1");
+        LambdaQueryWrapper<Exam> wrapper_exam = Wrappers.lambdaQuery();
+        wrapper_exam.eq(Exam::getEid, eid).last("limit 1");
+        ExamData examData = examDataMapper.selectOne(wrapper);
+        if(examData == null) return Result.error("-1", "无法查看本场考试信息");
+        Exam exam = examMapper.selectOne(wrapper_exam);
+        examData.setProblemChoice(exam.getProblemChoice());
+        examData.setProblemSubject(exam.getProblemSubject());
+        return Result.success(examData);
     }
 }

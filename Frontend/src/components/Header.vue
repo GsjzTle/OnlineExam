@@ -23,17 +23,12 @@
                 </div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
-                    <span class="el-dropdown-link">
-                        {{username}}
-                        <i class="el-icon-caret-bottom"></i>
-                    </span>
+                    <span class="el-dropdown-link" style="margin-left: 10px">{{username}}
+                      <i class="el-icon-caret-bottom"></i></span>
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <a href="https://github.com/lin-xin/vue-manage-system" target="_blank">
-                                <el-dropdown-item>项目仓库</el-dropdown-item>
-                            </a>
                             <el-dropdown-item command="user">个人中心</el-dropdown-item>
-                            <el-dropdown-item divided command="loginout">退出登录</el-dropdown-item>
+                            <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
                 </el-dropdown>
@@ -47,7 +42,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 export default {
     setup() {
-        const username = localStorage.getItem("ms_username");
+        const username = JSON.parse(window.localStorage.getItem("_User")).realName;
         const message = 2;
 
         const store = useStore();
@@ -66,8 +61,8 @@ export default {
         // 用户名下拉菜单选择事件
         const router = useRouter();
         const handleCommand = (command) => {
-            if (command == "loginout") {
-                localStorage.removeItem("ms_username");
+            if (command == "logout") {
+                window.localStorage.clear();
                 router.push("/login");
             } else if (command == "user") {
                 router.push("/user");

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div style="margin-top: -20px">
+  <div v-if="SHOW_PAGE">
+  <div style="margin-top: -20px">
       <el-progress :percentage="nowpercentage" :stroke-width="12"
                    :status="nowpercentage == 100 ? 'success' : null" style="margin-top: 20px"/>
     </div>
@@ -39,7 +39,7 @@
           </div>
           <div v-else>
             <h3>输入答案</h3>
-            <el-input style="margin-top: 15px"
+            <el-input style="margin-top: 15px;"
                       v-model="UserSubject[visProblem.index - ProblemChoice.length]"
                       type="textarea" placeholder="请将答案填写在此方框中"
                       :disabled="submitted == 1"/>
@@ -56,6 +56,7 @@
       <el-col :offset="1" :span="6">
         <el-card style="width: 100%">
           <el-divider style="margin-top: -2px"><h3>选择题</h3></el-divider>
+          <el-empty :image-size="100" v-if="ProblemChoice.length == 0" style="height: 50px"/>
           <el-button
               :plain="selectColor(problem)"
               :type="getColor(problem)"
@@ -67,6 +68,7 @@
             {{ problem.index + 1 }}
           </el-button>
           <el-divider style="margin-top: 28px"><h3>主观题</h3></el-divider>
+          <el-empty :image-size="100" v-if="ProblemSubject.length == 0"/>
           <el-button
               :plain="selectColor(problem)"
               :type="getColor(problem)"
@@ -97,6 +99,7 @@ import {ElMessage, ElMessageBox} from "element-plus";
 export default {
   data() {
     return {
+      SHOW_PAGE:false,
       submitted: '1',
       nowpercentage: '',
       option: '',
@@ -168,16 +171,37 @@ export default {
     }
   },
   created() {
-    request.get('/exam', {params: {eid: this.$route.query.eid == null ? 1 : this.$route.query.eid,}}).then(res => {
-      if(this.$route.query.userChoice != null) this.UserChoice = this.$route.query.userChoice.split("|#|").map(Number)
-      if(this.$route.query.userSubject != null) this.UserSubject = this.$route.query.userSubject.split("|#|")
-      if(this.$route.query.teacherScore != null) this.TeacherScore = this.$route.query.teacherScore.split("|#|")
-      if(this.$route.query.autoScore != null) this.AutoScore = this.$route.query.autoScore.split("|#|")
+    request.get('/examdata/exam_user', {
+      params:
+          {
+            eid: this.$route.query.eid,
+            uid: this.$route.query.uid == null ? JSON.parse(window.localStorage.getItem("_User")).uid : this.$route.query.uid
+          }
+    }).then(res => {
+      this.SHOW_PAGE = true
+      this.User = JSON.parse(window.localStorage.getItem("_User"))
+      if(res.code == "-1" || (res.data.visible == 1 && this.User.role == 1)) {
+        ElMessage({
+          type: "error",
+          message: res.msg
+        })
+        this.$router.go(-1)
+        return
+      }
       this.Exam = res.data
-      let ProblemChoice = res.data.problemChoice.split("|#|")
-      let ProblemSubject = res.data.problemSubject.split("|#|")
-      let ScoreChoice = res.data.scoreChoice.split("|#|")
-      let ScoreSubject = res.data.scoreSubject.split("|#|")
+      this.UserChoice = res.data.userChoice.split("|#|").map(Number)
+      this.UserSubject = res.data.userSubject.split("|#|")
+      if(res.data.teacherScore != null && res.data.teacherScore.length != 0)this.TeacherScore = res.data.teacherScore.split("|#|")
+      if(res.data.autoScore != null && res.data.autoScore.length != 0) this.AutoScore = res.data.autoScore.split("|#|")
+      let ProblemChoice = []
+      if(res.data.problemChoice.length != 0) ProblemChoice = res.data.problemChoice.split("|#|")
+      let ProblemSubject = []
+      if(res.data.problemSubject.length != 0) ProblemSubject = res.data.problemSubject.split("|#|")
+      let ScoreChoice = []
+      if(res.data.scoreChoice.length != 0) ScoreChoice = res.data.scoreChoice.split("|#|")
+      let ScoreSubject = []
+      if(res.data.scoreSubject.length != 0) ScoreSubject = res.data.scoreSubject.split("|#|")
+
       let cnt = 0;
       for (let i = 0; i < ProblemChoice.length; i++) {
         let x = {
@@ -203,8 +227,8 @@ export default {
         cnt++;
         this.ProblemData.push(x)
       }
-      this.load(this.ProblemChoice[0].pid, 1, 0)
-
+      if(this.ProblemChoice.length != 0) this.load(this.ProblemChoice[0].pid, 1, 0)
+      else this.load(this.ProblemSubject[0].pid, 2, 0)
     })
     this.ProgressPercentage()
   }

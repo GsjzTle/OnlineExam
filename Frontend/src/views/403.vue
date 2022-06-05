@@ -6,7 +6,6 @@
             <router-link to="/">
                 <el-button type="primary" size="large">返回首页</el-button>
             </router-link>
-            <el-button class="error-btn" type="primary" size="large" @click="goBack">返回上一页</el-button>
         </div>
     </div>
 </template>
@@ -16,13 +15,7 @@ import { useRouter } from "vue-router";
 export default {
     name: "404",
     setup() {
-        const router = useRouter();
-        const goBack = () => {
-            router.go(-1);
-        };
-        return {
-            goBack,
-        };
+
     },
 };
 </script>
