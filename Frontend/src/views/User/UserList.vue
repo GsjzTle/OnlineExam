@@ -46,9 +46,9 @@
           <template #default="scope">
             <el-button type="text" icon="el-icon-lx-attention" @click="handleEdit(scope.row)">查看
             </el-button>
-            <el-popconfirm title="你确定要删除这条记录吗?" @confirm="deleteExamData(scope.row.id)">
+            <el-popconfirm title="你确定要删除这条记录吗?" @confirm="deleteUser(scope.row.uid)">
               <template #reference>
-                <el-button type="text" icon="el-icon-delete" class="red">删除</el-button>
+                <el-button type="text" icon="el-icon-delete" class="red" >删除</el-button>
               </template>
             </el-popconfirm>
           </template>
@@ -129,8 +129,9 @@ export default {
         }
       })
     },
-    deleteExamData(id) {
-      request.delete("/examdata", {params: {id: id}}).then(res => {
+    deleteUser(id) {
+      
+      request.delete("/user", {params: {uid: id}}).then(res => {
         ElMessage({
           type: "success",
           message: "删除成功"
