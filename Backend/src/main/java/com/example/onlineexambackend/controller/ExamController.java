@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/exam")
@@ -23,7 +24,6 @@ public class ExamController {
         Exam exam = examMapper.selectById(eid);
         return Result.success(exam);
     }
-
     @PostMapping
     public Result<?> addExam(@RequestBody Exam exam){
         exam.setCreateTime(new Date());
@@ -44,5 +44,12 @@ public class ExamController {
         Page.addOrder(OrderItem.desc("begin_time")); // 按照 id 排序
         Page<Exam> examDataPage = examMapper.selectPage(Page, wrapper);
         return Result.success(examDataPage);
+    }
+    @GetMapping("/class_name")
+    public Result<?> getExamByClassName(@RequestParam(defaultValue = "", value = "className") String className){
+        LambdaQueryWrapper<Exam> wrapper = Wrappers.lambdaQuery();
+        wrapper.like(Exam::getClassName, className);
+        List<Exam> exams = examMapper.selectList(wrapper);
+        return Result.success(exams);
     }
 }

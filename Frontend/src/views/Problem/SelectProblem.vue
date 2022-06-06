@@ -54,7 +54,7 @@
         </el-dialog>
         <el-dialog
             v-model="dialogVisible1"
-            title="请填写试题信息"
+            title="请编辑试题信息"
             width="60%">
           <el-form :model="form1" label-width="25%">
             <el-form-item label="题目名称">
@@ -63,7 +63,7 @@
             <el-form-item label="题目描述">
               <el-input type="textarea" v-model="form1.description"/>
             </el-form-item>
-            <el-form-item label="题目学科">
+            <el-form-item label="学科">
               <el-select v-model="form1.subjectName" placeholder="请选择科目" class="handle-select mr10">
                 <el-option v-for="subject in Subjects" :label="subject.subjectName" :value="subject.subjectName"/>
               </el-select>
@@ -207,9 +207,9 @@ export default {
           type: 'success',
           message: "添加成功"
         })
+        this.load()
       })
       this.dialogVisible = false
-      this.load()
     },
     updateProblem(){
       request.put('/problemchoice', this.form1).then(res => {
@@ -217,9 +217,9 @@ export default {
           type: 'success',
           message: "更新成功"
         })
+        this.load()
       })
       this.dialogVisible1 = false
-      this.load()
     }
   },
   created() {

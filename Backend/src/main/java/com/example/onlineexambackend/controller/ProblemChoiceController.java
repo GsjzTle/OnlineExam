@@ -12,10 +12,7 @@ import com.example.onlineexambackend.mapper.ProblemChoiceMapper;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @RestController
 @RequestMapping("/problemchoice")
@@ -92,6 +89,7 @@ public class ProblemChoiceController {
 
     @PostMapping
     public Result<?> addProblemChoice(@RequestBody ProblemChoice problemChoice){
+        problemChoice.setCreateTime(new Date());
         problemChoiceMapper.insert(problemChoice);
         return Result.success();
     }

@@ -12,10 +12,7 @@ import com.example.onlineexambackend.mapper.ProblemSubjectMapper;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @RestController
 @RequestMapping("/problemsubject")
@@ -32,14 +29,13 @@ public class ProblemSubjectController {
     @GetMapping("/page")
     public Result<?> findPage(@RequestParam(defaultValue = "1") Integer pageNum,
                               @RequestParam(defaultValue = "10") Integer pageSize,
-                              @RequestParam(defaultValue = "") String search){
+                              @RequestParam(defaultValue = "", value = "select_subject") String search){
         LambdaQueryWrapper<ProblemSubject> wrapper = Wrappers.lambdaQuery();
         if(StrUtil.isNotBlank(search)) {
-            wrapper.like(ProblemSubject::getTitle, search).or
-                    (query->{query.like(ProblemSubject::getPid, search);});
+            wrapper.like(ProblemSubject::getSubjectName, search);
         }
         Page<ProblemSubject> Page = new Page<>(pageNum, pageSize);
-        Page.addOrder(OrderItem.asc("pid")); // 按照 id 排序
+        Page.addOrder(OrderItem.desc("pid")); // 按照 id 排序
         Page<ProblemSubject> problemSubjectPage = problemSubjectMapper.selectPage(Page, wrapper);
         return Result.success(problemSubjectPage);
     }
@@ -85,5 +81,16 @@ public class ProblemSubjectController {
             randomSubjects.add(problemSubject);
         }
         return Result.success(randomSubjects);
+    }
+    @PostMapping
+    public Result<?> addProblemChoice(@RequestBody ProblemSubject problemSubject){
+        problemSubject.setCreateTime(new Date());
+        problemSubjectMapper.insert(problemSubject);
+        return Result.success();
+    }
+    @PutMapping
+    public Result<?> updateProblemChoice(@RequestBody ProblemSubject problemSubject){
+        problemSubjectMapper.updateById(problemSubject);
+        return Result.success();
     }
 }

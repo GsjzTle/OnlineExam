@@ -29,6 +29,12 @@ public class UserController {
         userMapper.deleteById(uid);
         return Result.success();
     }
+
+    @PutMapping
+    public Result<?> updateUser(@RequestBody User user){
+        userMapper.updateById(user);
+        return Result.success();
+    }
     @GetMapping("/all")
     public Result<?> findPage(@RequestParam(defaultValue = "1") Integer pageNum,
                               @RequestParam(defaultValue = "10") Integer pageSize,
@@ -71,5 +77,11 @@ public class UserController {
     public Result<?> getUser(@RequestParam("uid") Integer uid){
         User user = userMapper.selectById(uid);
         return Result.success();
+    }
+
+    @GetMapping("/count")
+    public Result<?> getUser(){
+        Long user_count = userMapper.selectCount(null);
+        return Result.success(user_count);
     }
 }

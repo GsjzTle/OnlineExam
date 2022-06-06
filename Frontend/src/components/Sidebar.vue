@@ -2,7 +2,7 @@
   <div class="sidebar">
     <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
       text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
-      <template v-if="role == 1" v-for="item in items">
+      <template v-if="role == 1" v-for="item in items_stu">
         <template v-if="item.subs">
           <el-submenu :index="item.index" :key="item.index">
             <template #title>
@@ -59,49 +59,49 @@
 </template>
 
 <script>
-import { computed, watch } from "vue";
+import {computed, onMounted, watch} from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 
 export default {
   setup() {
-    const role = window.localStorage.getItem("_User").role;
+    const role = JSON.parse(window.localStorage.getItem("_User")).role;
     const items = [
       {
         icon: "el-icon-lx-home",
         index: "/dashboard",
         title: "系统首页",
       },
-      {
-        icon: "el-icon-lx-emoji",
-        index: "/icon",
-        title: "自定义图标",
-      },
-      {
-        icon: "el-icon-pie-chart",
-        index: "/charts",
-        title: "schart图表",
-      },
-      {
-        icon: "el-icon-lx-global",
-        index: "/i18n",
-        title: "国际化功能",
-      },
-      {
-        icon: "el-icon-lx-warn",
-        index: "7",
-        title: "错误处理",
-        subs: [
-          {
-            index: "/permission",
-            title: "权限测试",
-          },
-          {
-            index: "/404",
-            title: "404页面",
-          },
-        ],
-      },
+      // {
+      //   icon: "el-icon-lx-emoji",
+      //   index: "/icon",
+      //   title: "自定义图标",
+      // },
+      // {
+      //   icon: "el-icon-pie-chart",
+      //   index: "/charts",
+      //   title: "schart图表",
+      // },
+      // {
+      //   icon: "el-icon-lx-global",
+      //   index: "/i18n",
+      //   title: "国际化功能",
+      // },
+      // {
+      //   icon: "el-icon-lx-warn",
+      //   index: "7",
+      //   title: "错误处理",
+      //   subs: [
+      //     {
+      //       index: "/permission",
+      //       title: "权限测试",
+      //     },
+      //     {
+      //       index: "/404",
+      //       title: "404页面",
+      //     },
+      //   ],
+      // },
       {
         icon: "el-icon-lx-redpacket_fill",
         index: "/user",
@@ -111,10 +111,10 @@ export default {
             index: "/userlist",
             title: "用户列表",
           },
-          {
-            index: "/404",
-            title: "404页面",
-          },
+          // {
+          //   index: "/404",
+          //   title: "404页面",
+          // },
         ],
       },
       {
@@ -143,10 +143,10 @@ export default {
             index: "/404",
             title: "404页面",
           },
-          {
-            index: "/test",
-            title: "测试界面",
-          },
+          // {
+          //   index: "/test",
+          //   title: "测试界面",
+          // },
         ],
       },
       {
@@ -166,7 +166,62 @@ export default {
       },
 
     ];
-
+    const items_stu = [
+      {
+        icon: "el-icon-lx-home",
+        index: "/dashboard",
+        title: "系统首页",
+      },
+      // {
+      //   icon: "el-icon-lx-emoji",
+      //   index: "/icon",
+      //   title: "自定义图标",
+      // },
+      // {
+      //   icon: "el-icon-pie-chart",
+      //   index: "/charts",
+      //   title: "schart图表",
+      // },
+      // {
+      //   icon: "el-icon-lx-global",
+      //   index: "/i18n",
+      //   title: "国际化功能",
+      // },
+      // {
+      //   icon: "el-icon-lx-warn",
+      //   index: "7",
+      //   title: "错误处理",
+      //   subs: [
+      //     {
+      //       index: "/permission",
+      //       title: "权限测试",
+      //     },
+      //     {
+      //       index: "/404",
+      //       title: "404页面",
+      //     },
+      //   ],
+      // },
+      {
+        icon: "el-icon-lx-redpacket_fill",
+        index: "/Exam",
+        title: "考试管理",
+        subs: [
+          {
+            index: "/myexam",
+            title: "我的考试",
+          },
+          // {
+          //   index: "/404",
+          //   title: "404页面",
+          // },
+          // {
+          //   index: "/test",
+          //   title: "测试界面",
+          // },
+        ],
+      },
+    ];
     const route = useRoute();
 
     const onRoutes = computed(() => {
@@ -175,9 +230,13 @@ export default {
 
     const store = useStore();
     const collapse = computed(() => store.state.collapse);
-
+    onMounted(() => {
+      console.log(role)
+    })
     return {
+      onMounted,
       items,
+      items_stu,
       role,
       onRoutes,
       collapse,

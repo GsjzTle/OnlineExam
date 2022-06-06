@@ -9,55 +9,26 @@
         </el-select>
         <el-input v-model="search_real_name" placeholder="请输入学生真实姓名" class="handle-input mr10" clearable></el-input>
         <el-button type="primary" icon="el-icon-search" @click="load">搜索</el-button>
-        <span style="margin-left: 900px;">
-          <el-button type="primary" icon="el-icon-search" @click="dialogVisible = true">添加试题</el-button>
-         <el-dialog
-             v-model="dialogVisible"
-             title="Tips"
-             width="30%"
-             :before-close="handleClose">
-    <el-form :model="form" label-width="120px">
-    <el-form-item label="题目内容">
-      <el-input v-model="form.name" />
-    </el-form-item>
-      <el-form-item label="学科">
-      <el-select v-model="form.subjectName" placeholder="请选择学科">
-        <el-option label="操作系统" value="操作系统" />
-        <el-option label="计算机网络" value="计算机网络" />
-      </el-select>
-    </el-form-item>
-      <el-form-item label="题目选项">
-      <el-input v-model="form.select" />
-    </el-form-item>
-      <el-form-item label="正确答案">
-      <el-input v-model="form.answer" />
-    </el-form-item>
-
-      </el-form>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">提交</el-button>
-      </span>
-    </template>
-  </el-dialog>
-        </span>
       </div>
-<!--      表格-->
-      <el-table   :data="UserData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+      <!--      表格-->
+      <el-table :data="UserData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
         <el-table-column prop="uid" label="ID" width="65" align="center" sortable></el-table-column>
         <el-table-column prop="username" label="用户名" width="120" align="center"></el-table-column>
         <el-table-column prop="realName" label="真实姓名" width="100" align="center"></el-table-column>
         <el-table-column label="班级" width="160" align="center">
           <template #default="scope">
-            <p v-if="scope.row.className == '未加入班级'"><el-tag type="danger" style="font-size: 14px;font-weight: bolder">{{ scope.row.className }}</el-tag></p>
-            <p v-else><el-tag type="primary" style="font-size: 14px;font-weight: bolder">{{ scope.row.className }}</el-tag></p>
+            <p v-if="scope.row.className == '未加入班级'">
+              <el-tag type="danger" style="font-size: 14px;font-weight: bolder">{{ scope.row.className }}</el-tag>
+            </p>
+            <p v-else>
+              <el-tag type="primary" style="font-size: 14px;font-weight: bolder">{{ scope.row.className }}</el-tag>
+            </p>
           </template>
         </el-table-column>
-        <el-table-column prop="description" label="个人简介"  align="center"></el-table-column>
+        <el-table-column prop="description" label="个人简介" align="center"></el-table-column>
         <el-table-column prop="email" label="邮箱" align="center" width="200">
           <template #default="scope">
-            <u style="font-size: 15px; font-weight: bolder;color: #7896bb;">{{scope.row.email}}</u>
+            <u style="font-size: 15px; font-weight: bolder;color: #7896bb;">{{ scope.row.email }}</u>
           </template>
         </el-table-column>
         <el-table-column label="类型" align="center" width="150">
@@ -72,22 +43,54 @@
         </el-table-column>
         <el-table-column label="注册时间" align="center" width="200">
           <template #default="scope">
-            <p style="font-family: -webkit-pictograph,cursive;font-size: 17px">{{scope.row.createTime}}</p>
+            <p style="font-family: -webkit-pictograph,cursive;font-size: 17px">{{ scope.row.createTime }}</p>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180" align="center" fixed="right">
           <template #default="scope">
-            <el-button type="text" icon="el-icon-lx-attention" @click="handleEdit(scope.row)">编辑
-            </el-button>
+            <el-button type="text" icon="el-icon-lx-attention" @click="handleEdit(scope.row)">编辑</el-button>
             <el-popconfirm title="你确定要删除这条记录吗?" @confirm="deleteUser(scope.row.uid)">
               <template #reference>
-                <el-button type="text" icon="el-icon-delete" class="red" >删除</el-button>
+                <el-button type="text" icon="el-icon-delete" class="red">删除</el-button>
               </template>
             </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
     </div>
+    <el-dialog
+        v-model="dialogVisible"
+        title="请编辑用户信息"
+        width="30%">
+      <el-form :model="form" label-width="120px">
+        <el-form-item label="用户名">
+          <el-input v-model="form.username" disabled/>
+        </el-form-item>
+        <el-form-item label="真实姓名">
+          <el-input v-model="form.realName"/>
+        </el-form-item>
+        <el-form-item label="班级">
+          <el-input v-model="form.className"/>
+        </el-form-item>
+        <el-form-item label="个人简介">
+          <el-input v-model="form.description"/>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="form.email"/>
+        </el-form-item>
+        <el-form-item label="类型">
+          <el-input v-model="form.role" disabled/>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submit">提交</el-button>
+
+      </template>
+
+    </el-dialog>
     <!--  分页-->
     <div style="margin-top: 10px;">
       <el-pagination @size-change="handleSizeChange"
@@ -101,14 +104,6 @@
                      :current-page="currentPage"/>
     </div>
     <!--    弹框 -->
-    <el-dialog
-        v-model="dialogVisible"
-        width="60%"
-        :before-close="handleClose"
-        center
-        top="10vh"
-    >
-    </el-dialog>
   </div>
 </template>
 
@@ -119,7 +114,7 @@ import {ElMessage, ElMessageBox} from "element-plus";
 export default {
   data() {
     return {
-      Classes:[],
+      Classes: [],
       dialogVisible: false,
       search_real_name: '',
       select_class: '',
@@ -127,6 +122,17 @@ export default {
       pageSize: 10,
       currentPage: 1,
       UserData: [],
+      form: {
+        username: '',
+        name: '',
+        subjectName: '',
+        select: [],
+        answer: '',
+        introduction: '',
+        class: '',
+        email: '',
+
+      }
     }
   },
   methods: {
@@ -154,12 +160,17 @@ export default {
       this.load()
     },
     handleEdit(exam_user) {
-      this.$router.push({
-        path: '/showexam',
-        query: {
-          eid: exam_user.eid,
-          uid: exam_user.uid,
-        }
+      this.form = exam_user
+      this.dialogVisible = true
+    },
+    submit(){
+      request.put('/user', this.form).then(res => {
+        ElMessage({
+          type: "success",
+          message: "修改成功"
+        })
+        this.dialogVisible = false
+        this.load()
       })
     },
     deleteUser(id) {
@@ -185,6 +196,10 @@ export default {
 </script>
 
 <style scoped>
+.dialog-footer button:first-child {
+  margin-right: 10px;
+}
+
 .handle-box {
   margin-bottom: 20px;
 }

@@ -1,49 +1,15 @@
 <template>
     <div>
         <el-row :gutter="20">
-            <el-col :span="8">
-                <el-card shadow="hover" class="mgb20" style="height:252px;">
-                    <div class="user-info">
-                        <img src="../assets/img/img.jpg" class="user-avator" alt />
-                        <div class="user-info-cont">
-                            <div class="user-info-name">{{ name }}</div>
-                            <div>{{ role }}</div>
-                        </div>
-                    </div>
-                    <div class="user-info-list">
-                        上次登录时间：
-                        <span>2022-06-01</span>
-                    </div>
-                    <div class="user-info-list">
-                        上次登录地点：
-                        <span>杭州</span>
-                    </div>
-                </el-card>
-                <el-card shadow="hover" style="height:252px;">
-                    <template #header>
-                        <div class="clearfix">
-                            <span>语言详情</span>
-                        </div>
-                    </template>
-                    Vue
-                    <el-progress :percentage="71.3" color="#42b983"></el-progress>
-                    JavaScript
-                    <el-progress :percentage="24.1" color="#f1e05a"></el-progress>
-                    CSS
-                    <el-progress :percentage="13.7"></el-progress>
-                    HTML
-                    <el-progress :percentage="5.9" color="#f56c6c"></el-progress>
-                </el-card>
-            </el-col>
-            <el-col :span="16">
+            <el-col :span="24">
                 <el-row :gutter="20" class="mgb20">
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{ padding: '0px' }">
                             <div class="grid-content grid-con-1">
                                 <i class="el-icon-user-solid grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">1234</div>
-                                    <div>用户访问量</div>
+                                    <div class="grid-num">{{total_exam_pre}}</div>
+                                    <div>未开始的考试</div>
                                 </div>
                             </div>
                         </el-card>
@@ -53,8 +19,8 @@
                             <div class="grid-content grid-con-2">
                                 <i class="el-icon-message-solid grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">321</div>
-                                    <div>系统消息</div>
+                                    <div class="grid-num">{{total_exam_now}}</div>
+                                    <div>正在进行的考试</div>
                                 </div>
                             </div>
                         </el-card>
@@ -64,171 +30,50 @@
                             <div class="grid-content grid-con-3">
                                 <i class="el-icon-s-goods grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">5000</div>
-                                    <div>数量</div>
+                                    <div class="grid-num">{{total_exam_future}}</div>
+                                    <div>已结束的考试</div>
                                 </div>
                             </div>
                         </el-card>
                     </el-col>
                 </el-row>
-                <el-card shadow="hover" style="height:403px;">
-                    <template #header>
-                        <div class="clearfix">
-                            <span>待办事项</span>
-                            <el-button style="float: right; padding: 3px 0" type="text">添加</el-button>
-                        </div>
-                    </template>
+            </el-col>
+        </el-row>
 
-                    <el-table :show-header="false" :data="todoList" style="width:100%;">
-                        <el-table-column width="40">
-                            <template #default="scope">
-                                <el-checkbox v-model="scope.row.status"></el-checkbox>
-                            </template>
-                        </el-table-column>
-                        <el-table-column>
-                            <template #default="scope">
-                                <div class="todo-item" :class="{
-                                        'todo-item-del': scope.row.status,
-                                    }">{{ scope.row.title }}</div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column width="60">
-                            <template>
-                                <i class="el-icon-edit"></i>
-                                <i class="el-icon-delete"></i>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </el-card>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="12">
-                <el-card shadow="hover">
-                    <schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
-                </el-card>
-            </el-col>
-            <el-col :span="12">
-                <el-card shadow="hover">
-                    <schart ref="line" class="schart" canvasId="line" :options="options2"></schart>
-                </el-card>
-            </el-col>
-        </el-row>
     </div>
 </template>
 
 <script>
-import Schart from "vue-schart";
-import { reactive } from "vue";
+
+import request from "../utils/request";
+
 export default {
-    name: "dashboard",
-    components: { Schart },
-    setup() {
-        const name = localStorage.getItem("ms_username");
-        const role = name === "admin" ? "超级管理员" : "普通用户";
-
-        const data = reactive([
-            {
-                name: "2018/09/04",
-                value: 1083,
-            },
-            {
-                name: "2018/09/05",
-                value: 941,
-            },
-            {
-                name: "2018/09/06",
-                value: 1139,
-            },
-            {
-                name: "2018/09/07",
-                value: 816,
-            },
-            {
-                name: "2018/09/08",
-                value: 327,
-            },
-            {
-                name: "2018/09/09",
-                value: 228,
-            },
-            {
-                name: "2018/09/10",
-                value: 1065,
-            },
-        ]);
-        const options = {
-            type: "bar",
-            title: {
-                text: "最近一周题目增加数量",
-            },
-            xRorate: 25,
-            labels: ["周一", "周二", "周三", "周四", "周五"],
-            datasets: [
-                {
-                    label: "选择题",
-                    data: [234, 278, 270, 190, 230],
-                },
-                {
-                    label: "主观题",
-                    data: [164, 178, 190, 135, 160],
-                },
-
-            ],
-        };
-        const options2 = {
-            type: "line",
-            title: {
-                text: "最近几个月用户增长趋势图",
-            },
-            labels: ["6月", "7月", "8月", "9月", "10月"],
-            datasets: [
-                {
-                    label: "普通用户",
-                    data: [234, 278, 270, 190, 230],
-                },
-                {
-                    label: "教师用户",
-                    data: [164, 178, 150, 135, 160],
-                },
-            ],
-        };
-        const todoList = reactive([
-            {
-                title: "今天要修复100个bug",
-                status: false,
-            },
-            {
-                title: "今天要修复100个bug",
-                status: false,
-            },
-            {
-                title: "今天要写100行代码加几个bug吧",
-                status: false,
-            },
-            {
-                title: "今天要修复100个bug",
-                status: false,
-            },
-            {
-                title: "今天要修复100个bug",
-                status: true,
-            },
-            {
-                title: "今天要写100行代码加几个bug吧",
-                status: true,
-            },
-        ]);
-
-        return {
-            name,
-            data,
-            options,
-            options2,
-            todoList,
-            role,
-        };
-    },
+  data(){
+    return {
+      total_user: 0,
+      total_exam_pre:0,
+      total_exam_now:0,
+      total_exam_future:0,
+    }
+  },
+  created() {
+    let User = JSON.parse(window.localStorage.getItem("_User"))
+    request.get("/user/count", ).then(res => {
+      this.total_user = res.data
+    })
+    request.get("/exam/class_name", {
+      params: {
+        className: User.className,
+      }
+    }).then(res => {
+      for(let i = 0 ; i < res.data.length ; i ++){
+        let exam = res.data[i]
+        if (Date.parse(exam.beginTime) > new Date()) this.total_exam_pre ++ ;
+        if (Date.parse(exam.beginTime) <= new Date() && Date.parse(exam.endTime) >= new Date()) this.total_exam_now ++ ;
+        if (Date.parse(exam.endTime) < new Date()) this.total_exam_future ++ ;
+      }
+    })
+  }
 };
 </script>
 

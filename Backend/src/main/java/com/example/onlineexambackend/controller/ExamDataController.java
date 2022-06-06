@@ -98,7 +98,7 @@ public class ExamDataController {
         LambdaQueryWrapper<Exam> wrapper_exam = Wrappers.lambdaQuery();
         wrapper_exam.eq(Exam::getEid, eid).last("limit 1");
         ExamData examData = examDataMapper.selectOne(wrapper);
-        if(examData == null) return Result.error("-1", "无法查看本场考试信息");
+        if(examData == null) return Result.error("-1", "你并没有参加本场考试");
         Exam exam = examMapper.selectOne(wrapper_exam);
         examData.setProblemChoice(exam.getProblemChoice());
         examData.setProblemSubject(exam.getProblemSubject());
