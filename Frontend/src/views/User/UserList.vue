@@ -9,6 +9,39 @@
         </el-select>
         <el-input v-model="search_real_name" placeholder="请输入学生真实姓名" class="handle-input mr10" clearable></el-input>
         <el-button type="primary" icon="el-icon-search" @click="load">搜索</el-button>
+        <span style="margin-left: 900px;">
+          <el-button type="primary" icon="el-icon-search" @click="dialogVisible = true">添加试题</el-button>
+         <el-dialog
+             v-model="dialogVisible"
+             title="Tips"
+             width="30%"
+             :before-close="handleClose">
+    <el-form :model="form" label-width="120px">
+    <el-form-item label="题目内容">
+      <el-input v-model="form.name" />
+    </el-form-item>
+      <el-form-item label="学科">
+      <el-select v-model="form.subjectName" placeholder="请选择学科">
+        <el-option label="操作系统" value="操作系统" />
+        <el-option label="计算机网络" value="计算机网络" />
+      </el-select>
+    </el-form-item>
+      <el-form-item label="题目选项">
+      <el-input v-model="form.select" />
+    </el-form-item>
+      <el-form-item label="正确答案">
+      <el-input v-model="form.answer" />
+    </el-form-item>
+
+      </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">提交</el-button>
+      </span>
+    </template>
+  </el-dialog>
+        </span>
       </div>
 <!--      表格-->
       <el-table   :data="UserData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
@@ -44,7 +77,7 @@
         </el-table-column>
         <el-table-column label="操作" width="180" align="center" fixed="right">
           <template #default="scope">
-            <el-button type="text" icon="el-icon-lx-attention" @click="handleEdit(scope.row)">查看
+            <el-button type="text" icon="el-icon-lx-attention" @click="handleEdit(scope.row)">编辑
             </el-button>
             <el-popconfirm title="你确定要删除这条记录吗?" @confirm="deleteUser(scope.row.uid)">
               <template #reference>
