@@ -14,8 +14,6 @@ import java.util.Date;
 public class ProblemSubject {
     @TableId(type = IdType.AUTO)
     private Integer pid;
-    private Integer uid;
-    private Integer sid;
     private String subjectName;
     private String title;
     private String description;
