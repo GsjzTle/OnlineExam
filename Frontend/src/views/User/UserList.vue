@@ -130,7 +130,7 @@ export default {
       })
     },
     deleteUser(id) {
-      
+
       request.delete("/user", {params: {uid: id}}).then(res => {
         ElMessage({
           type: "success",

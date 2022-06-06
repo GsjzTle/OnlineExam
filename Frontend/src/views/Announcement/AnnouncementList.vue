@@ -30,19 +30,30 @@
 
 <script>
 
+import request from "../../utils/request";
+
 export default {
-    data(){
-        return{
-            AnnouncementData:[
-                {
-                    id:'1',
-                    content:'balabalabalablabaalassdasdas',
-                    createDate:'2019.05.23 20:20:20',
-                    createMan:'txc'
-                }
-            ]
-        }
-    }
+    data() {
+      return {
+        AnnouncementData: [
+          {
+            id: '1',
+            content: 'balabalabalablabaalassdasdas',
+            createDate: '2019.05.23 20:20:20',
+            createMan: 'txc'
+          }
+        ]
+      }
+    },
+  created() {
+    request.get("/problemchoice/all").then(res => {
+      this.ProblemChoice = res.data;
+      for(let i = 0 ; i < res.data.length ; i ++){
+        this.ProblemChoice[i].options = res.data[i].options.split("|#|")
+        console.log(res.data[i])
+      }
+    })
+  }
 }
 </script>
 

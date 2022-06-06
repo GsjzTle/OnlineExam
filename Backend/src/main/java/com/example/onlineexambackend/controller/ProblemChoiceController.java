@@ -9,10 +9,7 @@ import com.example.onlineexambackend.common.Result;
 import com.example.onlineexambackend.entity.ExamData;
 import com.example.onlineexambackend.entity.ProblemChoice;
 import com.example.onlineexambackend.mapper.ProblemChoiceMapper;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -26,6 +23,11 @@ public class ProblemChoiceController {
     @Resource
     private ProblemChoiceMapper problemChoiceMapper;
 
+    @DeleteMapping
+    public Result<?> deleteById(@RequestParam(value = "pid") Integer pid){
+        problemChoiceMapper.deleteById(pid);
+        return Result.success();
+    }
     @GetMapping("/page")
     public Result<?> findPage(@RequestParam(defaultValue = "1") Integer pageNum,
                               @RequestParam(defaultValue = "10") Integer pageSize,
