@@ -141,6 +141,7 @@ export default {
     },
   },
   created() {
+
     request.get("/class/all").then(res => {
       this.Classes = res.data
       console.log(res.data)

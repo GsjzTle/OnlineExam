@@ -1,8 +1,8 @@
 <template>
   <div class="sidebar">
     <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
-             text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
-      <template v-if="role==1" v-for="item in items">
+      text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
+      <template v-if="role == 1" v-for="item in items">
         <template v-if="item.subs">
           <el-submenu :index="item.index" :key="item.index">
             <template #title>
@@ -59,9 +59,9 @@
 </template>
 
 <script>
-import {computed, watch} from "vue";
-import {useStore} from "vuex";
-import {useRoute} from "vue-router";
+import { computed, watch } from "vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
 
 export default {
   setup() {
@@ -128,16 +128,16 @@ export default {
         title: "考试管理",
         subs: [
           {
-            index:"/examjudge",
-            title:"教师阅卷",
+            index: "/examjudge",
+            title: "教师阅卷",
           },
           {
-            index:"/addexam",
-            title:"添加考试",
+            index: "/addexam",
+            title: "添加考试",
           },
           {
-            index:"/myexam",
-            title:"我的考试",
+            index: "/myexam",
+            title: "我的考试",
           },
           {
             index: "/404",
@@ -148,7 +148,22 @@ export default {
             title: "测试界面",
           },
         ],
-      }
+      },
+      {
+        icon: "el-icon-lx-redpacket_fill",
+        index: "/Problem",
+        title: "试题管理",
+        subs: [
+          {
+            index: "/selectproblem",
+            title: "选择题题库",
+          },
+          {
+            index: "/subjectiveproblem",
+            title: "主观题题库",
+          },
+        ],
+      },
 
     ];
 
@@ -224,7 +239,7 @@ export default {
   width: 250px;
 }
 
-.sidebar > ul {
+.sidebar>ul {
   height: 100%;
 }
 </style>

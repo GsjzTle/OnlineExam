@@ -1,4 +1,4 @@
-import {createRouter, createWebHashHistory} from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import Home from "../views/Home.vue";
 
 const routes = [
@@ -16,42 +16,42 @@ const routes = [
                 meta: {
                     title: '系统首页'
                 },
-                component: () => import ( /* webpackChunkName: "dashboard" */ "../views/Dashboard.vue")
+                component: () => import( /* webpackChunkName: "dashboard" */ "../views/Dashboard.vue")
             }, {
                 path: "/table",
                 name: "basetable",
                 meta: {
                     title: '表格'
                 },
-                component: () => import ( /* webpackChunkName: "table" */ "../views/BaseTable.vue")
+                component: () => import( /* webpackChunkName: "table" */ "../views/BaseTable.vue")
             }, {
                 path: "/charts",
                 name: "basecharts",
                 meta: {
                     title: '图表'
                 },
-                component: () => import ( /* webpackChunkName: "charts" */ "../views/BaseCharts.vue")
+                component: () => import( /* webpackChunkName: "charts" */ "../views/BaseCharts.vue")
             }, {
                 path: "/form",
                 name: "baseform",
                 meta: {
                     title: '表单'
                 },
-                component: () => import ( /* webpackChunkName: "form" */ "../views/BaseForm.vue")
+                component: () => import( /* webpackChunkName: "form" */ "../views/BaseForm.vue")
             }, {
                 path: "/tabs",
                 name: "tabs",
                 meta: {
                     title: 'tab标签'
                 },
-                component: () => import ( /* webpackChunkName: "tabs" */ "../views/Tabs.vue")
+                component: () => import( /* webpackChunkName: "tabs" */ "../views/Tabs.vue")
             }, {
                 path: "/donate",
                 name: "donate",
                 meta: {
                     title: '鼓励作者'
                 },
-                component: () => import ( /* webpackChunkName: "donate" */ "../views/Donate.vue")
+                component: () => import( /* webpackChunkName: "donate" */ "../views/Donate.vue")
             }, {
                 path: "/permission",
                 name: "permission",
@@ -59,70 +59,70 @@ const routes = [
                     title: '权限管理',
                     permission: true
                 },
-                component: () => import ( /* webpackChunkName: "permission" */ "../views/Permission.vue")
+                component: () => import( /* webpackChunkName: "permission" */ "../views/Permission.vue")
             }, {
                 path: "/i18n",
                 name: "i18n",
                 meta: {
                     title: '国际化语言'
                 },
-                component: () => import ( /* webpackChunkName: "i18n" */ "../views/I18n.vue")
+                component: () => import( /* webpackChunkName: "i18n" */ "../views/I18n.vue")
             }, {
                 path: "/upload",
                 name: "upload",
                 meta: {
                     title: '上传插件'
                 },
-                component: () => import ( /* webpackChunkName: "upload" */ "../views/Upload.vue")
+                component: () => import( /* webpackChunkName: "upload" */ "../views/Upload.vue")
             }, {
                 path: "/icon",
                 name: "icon",
                 meta: {
                     title: '自定义图标'
                 },
-                component: () => import ( /* webpackChunkName: "icon" */ "../views/Icon.vue")
+                component: () => import( /* webpackChunkName: "icon" */ "../views/Icon.vue")
             }, {
                 path: '/404',
                 name: '404',
                 meta: {
                     title: '找不到页面'
                 },
-                component: () => import (/* webpackChunkName: "404" */ '../views/404.vue')
+                component: () => import(/* webpackChunkName: "404" */ '../views/404.vue')
             }, {
                 path: '/403',
                 name: '403',
                 meta: {
                     title: '没有权限'
                 },
-                component: () => import (/* webpackChunkName: "403" */ '../views/403.vue')
+                component: () => import(/* webpackChunkName: "403" */ '../views/403.vue')
             }, {
                 path: '/user',
                 name: 'user',
                 meta: {
                     title: '个人中心'
                 },
-                component: () => import (/* webpackChunkName: "user" */ '../views/User.vue')
+                component: () => import(/* webpackChunkName: "user" */ '../views/User.vue')
             }, {
                 path: '/editor',
                 name: 'editor',
                 meta: {
                     title: '富文本编辑器'
                 },
-                component: () => import (/* webpackChunkName: "editor" */ '../views/Editor.vue')
-            },{
+                component: () => import(/* webpackChunkName: "editor" */ '../views/Editor.vue')
+            }, {
                 path: "/userlist",
                 name: "userlist",
                 meta: {
                     title: '用户列表'
                 },
-                component: () => import ( /* webpackChunkName: "dashboard" */'../views/User/UserList.vue')
-            },{
+                component: () => import( /* webpackChunkName: "dashboard" */'../views/User/UserList.vue')
+            }, {
                 path: "/announcementlist",
                 name: "announcementlist",
                 meta: {
                     title: '公告管理'
                 },
-                component: () => import ( /* webpackChunkName: "dashboard" */'../views/Announcement/AnnouncementList.vue')
+                component: () => import( /* webpackChunkName: "dashboard" */'../views/Announcement/AnnouncementList.vue')
             },
             {
                 path: "/examonline",
@@ -130,7 +130,7 @@ const routes = [
                 meta: {
                     title: '在线考试'
                 },
-                component: () => import ('../views/Exam/ExamOnline.vue')
+                component: () => import('../views/Exam/ExamOnline.vue')
             },
             {
                 path: "/examjudge",
@@ -138,40 +138,56 @@ const routes = [
                 meta: {
                     title: '教师阅卷'
                 },
-                component: () => import ('../views/Exam/ExamJudge.vue')
+                component: () => import('../views/Exam/ExamJudge.vue')
             },
             {
-                path:"/addexam",
-                name:"addexam",
+                path: "/addexam",
+                name: "addexam",
                 meta: {
                     title: '添加考试'
                 },
-                component: () => import ('../views/Exam/AddExam.vue')
+                component: () => import('../views/Exam/AddExam.vue')
             },
             {
-                path:"/showexam",
-                name:"showexam",
+                path: "/showexam",
+                name: "showexam",
                 meta: {
                     title: '查看考试'
                 },
-                component: () => import ('../views/Exam/ShowExam.vue')
+                component: () => import('../views/Exam/ShowExam.vue')
             },
             {
-                path:"/myexam",
-                name:"myexam",
+                path: "/myexam",
+                name: "myexam",
                 meta: {
                     title: '我的考试'
                 },
-                component: () => import ('../views/Exam/MyExam.vue')
+                component: () => import('../views/Exam/MyExam.vue')
             },
             {
-                path:"/test",
-                name:"test",
+                path: "/test",
+                name: "test",
                 meta: {
                     title: '测试界面'
                 },
-                component: () => import ('../views/Exam/Test.vue')
+                component: () => import('../views/Exam/Test.vue')
             },
+            {
+                path: "/SelectProblem",
+                name: "SelectProblem",
+                meta: {
+                    title: '选择题管理'
+                },
+                component: () => import( '../views/Problem/SelectProblem.vue')
+            },
+            {
+                path: "/SubjectiveProblem",
+                name: "SubjectiveProblem",
+                meta: {
+                    title: '主观题管理'
+                },
+                component: () => import( '../views/Problem/SubjectiveProblem.vue')
+            }
         ]
     },
     {
@@ -180,7 +196,7 @@ const routes = [
         meta: {
             title: '登录'
         },
-        component: () => import ( /* webpackChunkName: "login" */ "../views/Login.vue")
+        component: () => import( /* webpackChunkName: "login" */ "../views/Login.vue")
     },
     {
         path: "/register",
@@ -188,7 +204,7 @@ const routes = [
         meta: {
             title: '注册'
         },
-        component: () => import ( /* webpackChunkName: "login" */ "../views/Register.vue")
+        component: () => import( /* webpackChunkName: "login" */ "../views/Register.vue")
     }
 ];
 
