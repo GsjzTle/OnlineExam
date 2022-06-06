@@ -25,10 +25,18 @@
                     <template #default="scope">{{ scope.row.subjectName }}</template>
                 </el-table-column>
                 <el-table-column prop="description" label="题目内容"></el-table-column>
-                <el-table-column prop="options" label="题目选项">
-                    
+                <el-table-column label="题目选项">
+                    <template #default="scope">
+                      <li v-for="option in scope.row.options">
+                        {{option}}
+                      </li>
+                    </template>
                 </el-table-column>
-                <el-table-column prop="answer" label="正确答案"></el-table-column>
+                <el-table-column label="正确答案">
+                  <template #default="scope">
+                      <el-tag size="small"> {{scope.row.options[scope.row.answer]}} </el-tag>
+                  </template>
+                </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template #default="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑
@@ -55,14 +63,12 @@ export default {
         }
     },
     created() {
-        request.get("/problemchoice/all", {
-            params: {
-
-            }
-        }).then(res => {
-            console.log(res.data);
+        request.get("/problemchoice/all").then(res => {
             this.ProblemChoice = res.data;
-            
+            for(let i = 0 ; i < res.data.length ; i ++){
+              this.ProblemChoice[i].options = res.data[i].options.split("|#|")
+              console.log(res.data[i])
+            }
         })
     }
 };
